@@ -130,6 +130,16 @@ public class TileSourceFactory {
 			ResourceProxy.string.roads_nl, 0, 18, 256, ".png",
 			"http://overlay.openstreetmap.nl/roads/");
 
+	public static final OnlineTileSourceBase ARCGIS_WORLD_STREET_MAP = new ArcGISOnlineTileSource("arcgis_world_street_map",
+			ResourceProxy.string.arcgis_world_street_map, 0, 20, 256, "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/");
+	
+	public static final OnlineTileSourceBase ARCGIS_WORLD_IMAGERY = new ArcGISOnlineTileSource("arcgis_world_magery",
+			ResourceProxy.string.arcgis_world_magery, 0, 20, 256, "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/");
+	
+	public static final OnlineTileSourceBase GOOGLE = new GoogleTileSource("Google",
+			ResourceProxy.string.google, 0, 20, 256, "", "http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&");
+		
+	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
 		mTileSources = new ArrayList<ITileSource>();
@@ -144,5 +154,8 @@ public class TileSourceFactory {
 		mTileSources.add(CLOUDMADESMALLTILES);
 		mTileSources.add(MAPQUESTOSM);
 		mTileSources.add(MAPQUESTAERIAL);
+		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
+		mTileSources.add(ARCGIS_WORLD_IMAGERY);
+		mTileSources.add(GOOGLE);
 	}
 }

@@ -16,6 +16,11 @@ public interface ResourceProxy {
 		// other stuff
 		unknown, format_distance_meters, format_distance_kilometers, format_distance_miles, format_distance_nautical_miles, format_distance_feet, online_mode, offline_mode, my_location, compass, map_mode,
 
+		// arcgis
+		arcgis_world_street_map,arcgis_world_magery,
+		
+		//google
+		google,
 	}
 
 	public static enum bitmap {
