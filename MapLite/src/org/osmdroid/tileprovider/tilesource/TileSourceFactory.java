@@ -139,6 +139,9 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase GOOGLE = new GoogleTileSource("Google",
 			ResourceProxy.string.google, 0, 20, 256, "", "http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&");
 		
+	public static final OnlineTileSourceBase BAIDU = new BaiduTileSource("Baidu",
+			ResourceProxy.string.baidu, 0, 20, 256, "", "http://shangetu0.map.bdimg.com/it/");
+		
 	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
@@ -157,5 +160,6 @@ public class TileSourceFactory {
 		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
 		mTileSources.add(GOOGLE);
+		mTileSources.add(BAIDU);
 	}
 }
