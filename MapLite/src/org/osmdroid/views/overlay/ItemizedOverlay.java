@@ -7,11 +7,14 @@ import org.osmdroid.ResourceProxy;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.MapView.Projection;
 import org.osmdroid.views.overlay.OverlayItem.HotspotPlace;
+import org.osmdroid.views.safecanvas.ISafeCanvas;
+import org.osmdroid.views.safecanvas.ISafeCanvas.UnsafeCanvasHandler;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 
 /**
  * Draws a list of {@link OverlayItem} as markers to a map. The item with the lowest index is drawn
@@ -25,7 +28,7 @@ import android.graphics.drawable.Drawable;
  *
  * @param <Item>
  */
-public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay implements
+public abstract class ItemizedOverlay<Item extends OverlayItem> extends SafeDrawOverlay implements
 		Overlay.Snappable {
 
 	// ===========================================================
@@ -42,6 +45,8 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 	private final Point mCurScreenCoords = new Point();
 	protected boolean mDrawFocusedItem = true;
 	private Item mFocusedItem;
+	private boolean mPendingFocusChangedEvent = false;
+	private OnFocusChangeListener mOnFocusChangeListener;
 
 	// ===========================================================
 	// Abstract methods
@@ -102,11 +107,15 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 	 *            if true, draw the shadow layer. If false, draw the overlay contents.
 	 */
 	@Override
-	public void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+	protected void drawSafe(ISafeCanvas canvas, MapView mapView, boolean shadow) {
 
 		if (shadow) {
 			return;
 		}
+		
+		if (mPendingFocusChangedEvent && mOnFocusChangeListener != null)
+			mOnFocusChangeListener.onFocusChanged(this, mFocusedItem);
+		mPendingFocusChangedEvent = false;
 
 		final Projection pj = mapView.getProjection();
 		final int size = this.mInternalItemList.size() - 1;
@@ -114,7 +123,7 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 		/* Draw in backward cycle, so the items with the least index are on the front. */
 		for (int i = size; i >= 0; i--) {
 			final Item item = getItem(i);
-			pj.toMapPixels(item.mGeoPoint, mCurScreenCoords);
+			pj.toMapPixels(item.getPoint(), mCurScreenCoords);
 
 			onDrawItem(canvas, item, mCurScreenCoords);
 		}
@@ -159,7 +168,7 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 	 * @param curScreenCoords
 	 *            the screen coordinates of the item
 	 */
-	protected void onDrawItem(final Canvas canvas, final Item item, final Point curScreenCoords) {
+	protected void onDrawItem(final ISafeCanvas canvas, final Item item, final Point curScreenCoords) {
 		final int state = (mDrawFocusedItem && (mFocusedItem == item) ? OverlayItem.ITEM_STATE_FOCUSED_MASK
 				: 0);
 		final Drawable marker = (item.getMarker(state) == null) ? getDefaultMarker(state) : item
@@ -169,10 +178,20 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 		boundToHotspot(marker, hotspot);
 
 		// draw it
-		Overlay.drawAt(canvas, marker, curScreenCoords.x, curScreenCoords.y, false);
+		if (this.isUsingSafeCanvas()) {
+			Overlay.drawAt(canvas.getSafeCanvas(), marker, curScreenCoords.x, curScreenCoords.y,
+					false);
+		} else {
+			canvas.getUnsafeCanvas(new UnsafeCanvasHandler() {
+				@Override
+				public void onUnsafeCanvas(Canvas canvas) {
+					Overlay.drawAt(canvas, marker, curScreenCoords.x, curScreenCoords.y, false);
+				}
+			});
+		}
 	}
 
-	private Drawable getDefaultMarker(final int state) {
+	protected Drawable getDefaultMarker(final int state) {
 		OverlayItem.setState(mDefaultMarker, state);
 		return mDefaultMarker;
 	}
@@ -198,6 +217,46 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 		return marker.getBounds().contains(hitX, hitY);
 	}
 
+	@Override
+	public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
+		final Projection pj = mapView.getProjection();
+		final Rect screenRect = pj.getIntrinsicScreenRect();
+		final int size = this.size();
+
+		for (int i = 0; i < size; i++) {
+			final Item item = getItem(i);
+			pj.toMapPixels(item.getPoint(), mCurScreenCoords);
+
+			final int state = (mDrawFocusedItem && (mFocusedItem == item) ? OverlayItem.ITEM_STATE_FOCUSED_MASK
+					: 0);
+			final Drawable marker = (item.getMarker(state) == null) ? getDefaultMarker(state)
+					: item.getMarker(state);
+			boundToHotspot(marker, item.getMarkerHotspot());
+			if (hitTest(item, marker, -mCurScreenCoords.x + screenRect.left + (int) e.getX(),
+					-mCurScreenCoords.y + screenRect.top + (int) e.getY())) {
+				// We have a hit, do we get a response from onTap?
+				if (onTap(i)) {
+					// We got a response so consume the event
+					return true;
+				}
+			}
+		}
+
+		return super.onSingleTapConfirmed(e, mapView);
+	}
+
+	/**
+	 * Override this method to handle a "tap" on an item. This could be from a touchscreen tap on an
+	 * onscreen Item, or from a trackball click on a centered, selected Item. By default, does
+	 * nothing and returns false.
+	 * 
+	 * @return true if you handled the tap, false if you want the event that generated it to pass to
+	 *         other overlays.
+	 */
+	protected boolean onTap(int index) {
+		return false;
+	}
+
 	/**
 	 * Set whether or not to draw the focused item. The default is to draw it, but some clients may
 	 * prefer to draw the focused item themselves.
@@ -213,6 +272,7 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 	 * found, this is a no-op. You can also pass null to remove focus.
 	 */
 	public void setFocus(final Item item) {
+		mPendingFocusChangedEvent = item != mFocusedItem;
 		mFocusedItem = item;
 	}
 
@@ -236,8 +296,8 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 	 * @return the same drawable that was passed in.
 	 */
 	protected synchronized Drawable boundToHotspot(final Drawable marker, HotspotPlace hotspot) {
-		final int markerWidth = (int) (marker.getIntrinsicWidth() * mScale);
-		final int markerHeight = (int) (marker.getIntrinsicHeight() * mScale);
+		final int markerWidth = marker.getIntrinsicWidth();
+		final int markerHeight = marker.getIntrinsicHeight();
 
 		mRect.set(0, 0, 0 + markerWidth, 0 + markerHeight);
 
@@ -279,5 +339,13 @@ public abstract class ItemizedOverlay<Item extends OverlayItem> extends Overlay 
 		}
 		marker.setBounds(mRect);
 		return marker;
+	}
+
+	public void setOnFocusChangeListener(OnFocusChangeListener l) {
+		mOnFocusChangeListener = l;
+	}
+
+	public static interface OnFocusChangeListener {
+		void onFocusChanged(ItemizedOverlay<?> overlay, OverlayItem newFocus);
 	}
 }

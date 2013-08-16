@@ -6,6 +6,7 @@ import java.util.HashMap;
 import microsoft.mappoint.TileSystem;
 
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
+import org.osmdroid.tileprovider.modules.MapTileModuleProviderBase;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.util.TileLooper;
 import org.slf4j.Logger;
@@ -81,13 +82,20 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 		return mTileSource;
 	}
 
+	/**
+	 * Creates a {@link MapTileCache} to be used to cache tiles in memory.
+	 */
+	public MapTileCache createTileCache() {
+		return new MapTileCache();
+	}
+
 	public MapTileProviderBase(final ITileSource pTileSource) {
 		this(pTileSource, null);
 	}
 
 	public MapTileProviderBase(final ITileSource pTileSource,
 			final Handler pDownloadFinishedListener) {
-		mTileCache = new MapTileCache();
+		mTileCache = this.createTileCache();
 		mTileRequestCompleteHandler = pDownloadFinishedListener;
 		mTileSource = pTileSource;
 	}
@@ -103,18 +111,16 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 	 */
 	@Override
 	public void mapTileRequestCompleted(final MapTileRequestState pState, final Drawable pDrawable) {
-		final MapTile tile = pState.getMapTile();
-		if (pDrawable != null) {
-			mTileCache.putTile(tile, pDrawable);
-		}
+		// put the tile in the cache
+		putTileIntoCache(pState, pDrawable);
 
 		// tell our caller we've finished and it should update its view
 		if (mTileRequestCompleteHandler != null) {
 			mTileRequestCompleteHandler.sendEmptyMessage(MapTile.MAPTILE_SUCCESS_ID);
 		}
 
-		if (DEBUGMODE) {
-			logger.debug("MapTile request complete: " + tile);
+		if (DEBUG_TILE_PROVIDERS) {
+			logger.debug("MapTileProviderBase.mapTileRequestCompleted(): " + pState.getMapTile());
 		}
 	}
 
@@ -127,13 +133,51 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 	 */
 	@Override
 	public void mapTileRequestFailed(final MapTileRequestState pState) {
-		final MapTile tile = pState.getMapTile();
 		if (mTileRequestCompleteHandler != null) {
 			mTileRequestCompleteHandler.sendEmptyMessage(MapTile.MAPTILE_FAIL_ID);
 		}
 
-		if (DEBUGMODE) {
-			logger.debug("MapTile request failed: " + tile);
+		if (DEBUG_TILE_PROVIDERS) {
+			logger.debug("MapTileProviderBase.mapTileRequestFailed(): " + pState.getMapTile());
+		}
+	}
+
+	/**
+	 * Called by implementation class methods indicating that they have produced an expired result
+	 * that can be used but better results may be delivered later. The tile is added to the cache,
+	 * and a MAPTILE_SUCCESS_ID message is sent.
+	 * 
+	 * @param pState
+	 *            the map tile request state object
+	 * @param pDrawable
+	 *            the Drawable of the map tile
+	 */
+	@Override
+	public void mapTileRequestExpiredTile(MapTileRequestState pState, Drawable pDrawable) {
+		// Put the expired tile into the cache
+		putExpiredTileIntoCache(pState, pDrawable);
+
+		// tell our caller we've finished and it should update its view
+		if (mTileRequestCompleteHandler != null) {
+			mTileRequestCompleteHandler.sendEmptyMessage(MapTile.MAPTILE_SUCCESS_ID);
+		}
+
+		if (DEBUG_TILE_PROVIDERS) {
+			logger.debug("MapTileProviderBase.mapTileRequestExpiredTile(): " + pState.getMapTile());
+		}
+	}
+
+	protected void putTileIntoCache(MapTileRequestState pState, Drawable pDrawable) {
+		final MapTile tile = pState.getMapTile();
+		if (pDrawable != null) {
+			mTileCache.putTile(tile, pDrawable);
+		}
+	}
+
+	protected void putExpiredTileIntoCache(MapTileRequestState pState, Drawable pDrawable) {
+		final MapTile tile = pState.getMapTile();
+		if (pDrawable != null && !mTileCache.containsTile(tile)) {
+			mTileCache.putTile(tile, pDrawable);
 		}
 	}
 
@@ -246,10 +290,15 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 		@Override
 		public void finaliseLoop() {
 			// now add the new ones, pushing out the old ones
-			while(!mNewTiles.isEmpty()) {
+			while (!mNewTiles.isEmpty()) {
 				final MapTile tile = mNewTiles.keySet().iterator().next();
 				final Bitmap bitmap = mNewTiles.remove(tile);
-				mTileCache.putTile(tile, new ExpirableBitmapDrawable(bitmap));
+				final ExpirableBitmapDrawable drawable = new ExpirableBitmapDrawable(bitmap);
+				drawable.setState(new int[] { ExpirableBitmapDrawable.EXPIRED });
+				Drawable existingTile = mTileCache.getMapTile(tile);
+				if (existingTile == null || ExpirableBitmapDrawable.isDrawableExpired(existingTile))
+					putExpiredTileIntoCache(new MapTileRequestState(tile,
+							new MapTileModuleProviderBase[0], null), drawable);
 			}
 		}
 
@@ -273,7 +322,7 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 				final int yy = (pY % (1 << mDiff)) * mTileSize_2;
 				mSrcRect.set(xx, yy, xx + mTileSize_2, yy + mTileSize_2);
 				mDestRect.set(0, 0, pTileSizePx, pTileSizePx);
-				final Bitmap bitmap = Bitmap.createBitmap(pTileSizePx, pTileSizePx, Bitmap.Config.ARGB_8888);
+				final Bitmap bitmap = Bitmap.createBitmap(pTileSizePx, pTileSizePx, Bitmap.Config.RGB_565);
 				final Canvas canvas = new Canvas(bitmap);
 				canvas.drawBitmap(oldBitmap, mSrcRect, mDestRect, null);
 				if (DEBUGMODE) {
@@ -287,14 +336,18 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 	}
 
 	private class ZoomOutTileLooper extends ScaleTileLooper {
+		private static final int MAX_ZOOM_OUT_DIFF = 4;
 		public ZoomOutTileLooper(final int pOldZoomLevel) {
 			super(pOldZoomLevel);
 		}
 		@Override
 		protected void handleTile(final int pTileSizePx, final MapTile pTile, final int pX, final int pY) {
 
-			// get many tiles from cache and make one tile from them
+			if (mDiff >= MAX_ZOOM_OUT_DIFF){
+				return;
+			}
 
+			// get many tiles from cache and make one tile from them
 			final int xx = pTile.getX() << mDiff;
 			final int yy = pTile.getY() << mDiff;
 			final int numTiles = 1 << mDiff;
@@ -308,7 +361,7 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 						final Bitmap oldBitmap = ((BitmapDrawable)oldDrawable).getBitmap();
 						if (oldBitmap != null) {
 							if (bitmap == null) {
-								bitmap = Bitmap.createBitmap(pTileSizePx, pTileSizePx, Bitmap.Config.ARGB_8888);
+								bitmap = Bitmap.createBitmap(pTileSizePx, pTileSizePx, Bitmap.Config.RGB_565);
 								canvas = new Canvas(bitmap);
 								canvas.drawColor(Color.LTGRAY);
 							}

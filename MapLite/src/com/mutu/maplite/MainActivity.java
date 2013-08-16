@@ -1,7 +1,11 @@
 package com.mutu.maplite;
 
 
+import org.osmdroid.tileprovider.MapTileProviderBasic;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.TilesOverlay;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -19,6 +23,11 @@ public class MainActivity extends Activity {
 		mapview = (MapView)findViewById(R.id.mapview);
 		mapview.setMultiTouchControls(true);
 		mapview.setBuiltInZoomControls(true);
+		
+//		final ITileSource tileSource = TileSourceFactory.TIANDITU_CVA;
+//		MapTileProviderBasic tileProvider = new MapTileProviderBasic(this, tileSource);
+//		TilesOverlay mapOverlay = new TilesOverlay(tileProvider, this);
+//		mapview.getOverlayManager().add(mapOverlay);
 	}
 
 	@Override

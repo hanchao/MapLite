@@ -60,18 +60,14 @@ public class TileSourceFactory {
 		mTileSources.add(mTileSource);
 	}
 
-	public static final OnlineTileSourceBase OSMARENDER = new XYTileSource("Osmarender",
-			ResourceProxy.string.osmarender, 0, 17, 256, ".png",
-			"http://tah.openstreetmap.org/Tiles/tile/");
-
 	public static final OnlineTileSourceBase MAPNIK = new XYTileSource("Mapnik",
 			ResourceProxy.string.mapnik, 0, 18, 256, ".png", "http://tile.openstreetmap.org/");
 
 	public static final OnlineTileSourceBase CYCLEMAP = new XYTileSource("CycleMap",
 			ResourceProxy.string.cyclemap, 0, 17, 256, ".png",
-			"http://a.andy.sandbox.cloudmade.com/tiles/cycle/",
-			"http://b.andy.sandbox.cloudmade.com/tiles/cycle/",
-			"http://c.andy.sandbox.cloudmade.com/tiles/cycle/");
+			"http://a.tile.opencyclemap.org/cycle/",
+			"http://b.tile.opencyclemap.org/cycle/",
+			"http://c.tile.opencyclemap.org/cycle/");
 
 	public static final OnlineTileSourceBase PUBLIC_TRANSPORT = new XYTileSource(
 			"OSMPublicTransport", ResourceProxy.string.public_transport, 0, 17, 256, ".png",
@@ -101,17 +97,17 @@ public class TileSourceFactory {
 
 	public static final OnlineTileSourceBase MAPQUESTOSM =
 		new XYTileSource("MapquestOSM", ResourceProxy.string.mapquest_osm, 0, 18, 256, ".png",
-				"http://otile1.mqcdn.com/tiles/1.0.0/osm/",
-				"http://otile2.mqcdn.com/tiles/1.0.0/osm/",
-				"http://otile3.mqcdn.com/tiles/1.0.0/osm/",
-				"http://otile4.mqcdn.com/tiles/1.0.0/osm/");
+				"http://otile1.mqcdn.com/tiles/1.0.0/map/",
+				"http://otile2.mqcdn.com/tiles/1.0.0/map/",
+				"http://otile3.mqcdn.com/tiles/1.0.0/map/",
+				"http://otile4.mqcdn.com/tiles/1.0.0/map/");
 
 	public static final OnlineTileSourceBase MAPQUESTAERIAL =
 		new XYTileSource("MapquestAerial", ResourceProxy.string.mapquest_aerial, 0, 11, 256, ".png",
-				"http://oatile1.mqcdn.com/naip/",
-				"http://oatile2.mqcdn.com/naip/",
-				"http://oatile3.mqcdn.com/naip/",
-				"http://oatile4.mqcdn.com/naip/");
+				"http://otile1.mqcdn.com/tiles/1.0.0/sat/",
+				"http://otile2.mqcdn.com/tiles/1.0.0/sat/",
+				"http://otile3.mqcdn.com/tiles/1.0.0/sat/",
+				"http://otile4.mqcdn.com/tiles/1.0.0/sat/");
 
 	public static final OnlineTileSourceBase DEFAULT_TILE_SOURCE = MAPNIK;
 
@@ -141,12 +137,16 @@ public class TileSourceFactory {
 		
 	public static final OnlineTileSourceBase BAIDU = new BaiduTileSource("Baidu",
 			ResourceProxy.string.baidu, 0, 20, 256, "", "http://shangetu0.map.bdimg.com/it/");
-		
+	
+	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
+			ResourceProxy.string.tianditu_vec, 0, 20, 256, "", "vec", "http://t6.tianditu.cn/vec_c/wmts");
+	
+	public static final OnlineTileSourceBase TIANDITU_CVA = new TiandituTileSource("tianditu_cva",
+			ResourceProxy.string.tianditu_cva, 0, 20, 256, "", "cva","http://t1.tianditu.cn/cva_c/wmts");
 	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
 		mTileSources = new ArrayList<ITileSource>();
-		mTileSources.add(OSMARENDER);
 		mTileSources.add(MAPNIK);
 		mTileSources.add(CYCLEMAP);
 		mTileSources.add(PUBLIC_TRANSPORT);
@@ -161,5 +161,7 @@ public class TileSourceFactory {
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
 		mTileSources.add(GOOGLE);
 		mTileSources.add(BAIDU);
+		mTileSources.add(TIANDITU_VEC);
+		mTileSources.add(TIANDITU_CVA);
 	}
 }

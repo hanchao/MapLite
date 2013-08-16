@@ -14,7 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.osmdroid.http.HttpClientFactory;
 import org.osmdroid.tileprovider.MapTile;
 import org.osmdroid.tileprovider.MapTileRequestState;
 import org.osmdroid.tileprovider.tilesource.BitmapTileSourceBase.LowMemoryException;
@@ -69,7 +69,15 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 	public MapTileDownloader(final ITileSource pTileSource,
 			final IFilesystemCache pFilesystemCache,
 			final INetworkAvailablityCheck pNetworkAvailablityCheck) {
-		super(NUMBER_OF_TILE_DOWNLOAD_THREADS, TILE_DOWNLOAD_MAXIMUM_QUEUE_SIZE);
+		this(pTileSource, pFilesystemCache, pNetworkAvailablityCheck,
+				NUMBER_OF_TILE_DOWNLOAD_THREADS, TILE_DOWNLOAD_MAXIMUM_QUEUE_SIZE);
+	}
+
+	public MapTileDownloader(final ITileSource pTileSource,
+			final IFilesystemCache pFilesystemCache,
+			final INetworkAvailablityCheck pNetworkAvailablityCheck, int pThreadPoolSize,
+			int pPendingQueueSize) {
+		super(pThreadPoolSize, pPendingQueueSize);
 
 		mFilesystemCache = pFilesystemCache;
 		mNetworkAvailablityCheck = pNetworkAvailablityCheck;
@@ -106,7 +114,7 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 	@Override
 	protected Runnable getTileLoader() {
 		return new TileLoader();
-	};
+	}
 
 	@Override
 	public int getMinimumZoomLevel() {
@@ -166,9 +174,17 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 					return null;
 				}
 
-				final HttpClient client = new DefaultHttpClient();
+				final HttpClient client = HttpClientFactory.createHttpClient();
 				final HttpUriRequest head = new HttpGet(tileURLString);
 				final HttpResponse response = client.execute(head);
+
+				// Check to see if we got success
+				final org.apache.http.StatusLine line = response.getStatusLine();
+				if (line.getStatusCode() != 200) {
+					logger.warn("Problem downloading MapTile: " + tile + " HTTP response: " + line);
+					return null;
+				}
+
 				final HttpEntity entity = response.getEntity();
 				if (entity == null) {
 					logger.warn("No content downloading MapTile: " + tile);
@@ -212,5 +228,15 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 
 			return null;
 		}
+
+		@Override
+		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
+			removeTileFromQueues(pState.getMapTile());
+			// don't return the tile because we'll wait for the fs provider to ask for it
+			// this prevent flickering when a load of delayed downloads complete for tiles
+			// that we might not even be interested in any more
+			pState.getCallback().mapTileRequestCompleted(pState, null);
+		}
+
 	}
 }

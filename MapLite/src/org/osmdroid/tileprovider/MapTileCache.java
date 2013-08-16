@@ -1,9 +1,6 @@
 // Created by plusminus on 17:58:57 - 25.09.2008
 package org.osmdroid.tileprovider;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 
 import android.graphics.drawable.Drawable;
@@ -13,7 +10,7 @@ import android.graphics.drawable.Drawable;
  * @author Nicolas Gramlich
  * 
  */
-public final class MapTileCache implements OpenStreetMapTileProviderConstants {
+public class MapTileCache implements OpenStreetMapTileProviderConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -22,9 +19,8 @@ public final class MapTileCache implements OpenStreetMapTileProviderConstants {
 	// Fields
 	// ===========================================================
 
+	protected final Object mCachedTilesLockObject = new Object();
 	protected LRUMapTileCache mCachedTiles;
-
-	private final ReadWriteLock mReadWriteLock = new ReentrantReadWriteLock();
 
 	// ===========================================================
 	// Constructors
@@ -47,30 +43,21 @@ public final class MapTileCache implements OpenStreetMapTileProviderConstants {
 	// ===========================================================
 
 	public void ensureCapacity(final int aCapacity) {
-		mReadWriteLock.readLock().lock();
-		try {
+		synchronized (mCachedTilesLockObject) {
 			mCachedTiles.ensureCapacity(aCapacity);
-		} finally {
-			mReadWriteLock.readLock().unlock();
 		}
 	}
 
 	public Drawable getMapTile(final MapTile aTile) {
-		mReadWriteLock.readLock().lock();
-		try {
+		synchronized (mCachedTilesLockObject) {
 			return this.mCachedTiles.get(aTile);
-		} finally {
-			mReadWriteLock.readLock().unlock();
 		}
 	}
 
 	public void putTile(final MapTile aTile, final Drawable aDrawable) {
 		if (aDrawable != null) {
-			mReadWriteLock.writeLock().lock();
-			try {
+			synchronized (mCachedTilesLockObject) {
 				this.mCachedTiles.put(aTile, aDrawable);
-			} finally {
-				mReadWriteLock.writeLock().unlock();
 			}
 		}
 	}
@@ -84,20 +71,14 @@ public final class MapTileCache implements OpenStreetMapTileProviderConstants {
 	// ===========================================================
 
 	public boolean containsTile(final MapTile aTile) {
-		mReadWriteLock.readLock().lock();
-		try {
+		synchronized (mCachedTilesLockObject) {
 			return this.mCachedTiles.containsKey(aTile);
-		} finally {
-			mReadWriteLock.readLock().unlock();
 		}
 	}
 
 	public void clear() {
-		mReadWriteLock.writeLock().lock();
-		try {
+		synchronized (mCachedTilesLockObject) {
 			this.mCachedTiles.clear();
-		} finally {
-			mReadWriteLock.writeLock().unlock();
 		}
 	}
 

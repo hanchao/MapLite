@@ -11,6 +11,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.TileLooper;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.MapView.Projection;
+import org.osmdroid.views.safecanvas.ISafeCanvas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -34,7 +36,7 @@ import android.view.SubMenu;
  *
  */
 
-public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
+public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(TilesOverlay.class);
 
@@ -59,6 +61,9 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 	private BitmapDrawable mLoadingTile = null;
 	private int mLoadingBackgroundColor = Color.rgb(216, 208, 208);
 	private int mLoadingLineColor = Color.rgb(200, 192, 192);
+
+	/** For overshooting the tile cache **/
+	private int mOvershootTileCache = 0;
 
 	public TilesOverlay(final MapTileProviderBase aTileProvider, final Context aContext) {
 		this(aTileProvider, new DefaultResourceProxyImpl(aContext));
@@ -105,7 +110,7 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 	}
 
 	@Override
-	protected void draw(final Canvas c, final MapView osmv, final boolean shadow) {
+	protected void drawSafe(final ISafeCanvas c, final MapView osmv, final boolean shadow) {
 
 		if (DEBUGMODE) {
 			logger.trace("onDraw(" + shadow + ")");
@@ -127,13 +132,14 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 		mViewPort.offset(mWorldSize_2, mWorldSize_2);
 
 		// Draw the tiles!
-		drawTiles(c, pj.getZoomLevel(), TileSystem.getTileSize(), mViewPort);
+		drawTiles(c.getSafeCanvas(), pj.getZoomLevel(), TileSystem.getTileSize(), mViewPort);
 	}
 
 	/**
 	 * This is meant to be a "pure" tile drawing function that doesn't take into account
-	 * platform-specific characteristics (like Android's canvas's having 0,0 as the center rather
-	 * than the upper-left corner).
+	 * osmdroid-specific characteristics (like osmdroid's canvas's having 0,0 as the center rather
+	 * than the upper-left corner). Once the tile is ready to be drawn, it is passed to
+	 * onTileReadyToDraw where custom manipulations can be made before drawing the tile.
 	 */
 	public void drawTiles(final Canvas c, final int zoomLevel, final int tileSizePx,
 			final Rect viewPort) {
@@ -156,7 +162,7 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 		public void initialiseLoop(final int pZoomLevel, final int pTileSizePx) {
 			// make sure the cache is big enough for all the tiles
 			final int numNeeded = (mLowerRight.y - mUpperLeft.y + 1) * (mLowerRight.x - mUpperLeft.x + 1);
-			mTileProvider.ensureCapacity(numNeeded);
+			mTileProvider.ensureCapacity(numNeeded + mOvershootTileCache);
 		}
 		@Override
 		public void handleTile(final Canvas pCanvas, final int pTileSizePx, final MapTile pTile, final int pX, final int pY) {
@@ -301,7 +307,7 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 				final int tileSize = mTileProvider.getTileSource() != null ? mTileProvider
 						.getTileSource().getTileSizePixels() : 256;
 				final Bitmap bitmap = Bitmap.createBitmap(tileSize, tileSize,
-						Bitmap.Config.ARGB_8888);
+						Bitmap.Config.RGB_565);
 				final Canvas canvas = new Canvas(bitmap);
 				final Paint paint = new Paint();
 				canvas.drawColor(mLoadingBackgroundColor);
@@ -324,8 +330,33 @@ public class TilesOverlay extends Overlay implements IOverlayMenuProvider {
 	private void clearLoadingTile() {
 		final BitmapDrawable bitmapDrawable = mLoadingTile;
 		mLoadingTile = null;
-		if (bitmapDrawable != null) {
-			bitmapDrawable.getBitmap().recycle();
+		// Only recycle if we are running on a project less than 2.3.3 Gingerbread.
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+			if (bitmapDrawable != null) {
+				bitmapDrawable.getBitmap().recycle();
+			}
 		}
+	}
+
+	/**
+	 * Set this to overshoot the tile cache. By default the TilesOverlay only creates a cache large
+	 * enough to hold the minimum number of tiles necessary to draw to the screen. Setting this
+	 * value will allow you to overshoot the tile cache and allow more tiles to be cached. This
+	 * increases the memory usage, but increases drawing performance.
+	 * 
+	 * @param overshootTileCache
+	 *            the number of tiles to overshoot the tile cache by
+	 */
+	public void setOvershootTileCache(int overshootTileCache) {
+		mOvershootTileCache = overshootTileCache;
+	}
+
+	/**
+	 * Get the tile cache overshoot value.
+	 * 
+	 * @return the number of tiles to overshoot tile cache
+	 */
+	public int getOvershootTileCache() {
+		return mOvershootTileCache;
 	}
 }

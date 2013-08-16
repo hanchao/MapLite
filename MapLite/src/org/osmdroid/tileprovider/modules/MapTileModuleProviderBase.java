@@ -1,10 +1,9 @@
 package org.osmdroid.tileprovider.modules;
 
-import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -84,14 +83,19 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 
 	private static final Logger logger = LoggerFactory.getLogger(MapTileModuleProviderBase.class);
 
-	private final ConcurrentHashMap<MapTile, MapTileRequestState> mWorking;
-	final LinkedHashMap<MapTile, MapTileRequestState> mPending;
+	protected final Object mQueueLockObject = new Object();
+	protected final HashMap<MapTile, MapTileRequestState> mWorking;
+	protected final LinkedHashMap<MapTile, MapTileRequestState> mPending;
 
-	public MapTileModuleProviderBase(final int pThreadPoolSize, final int pPendingQueueSize) {
+	public MapTileModuleProviderBase(int pThreadPoolSize, final int pPendingQueueSize) {
+		if (pPendingQueueSize < pThreadPoolSize) {
+			logger.warn("The pending queue size is smaller than the thread pool size. Automatically reducing the thread pool size.");
+			pThreadPoolSize = pPendingQueueSize;
+		}
 		mExecutor = Executors.newFixedThreadPool(pThreadPoolSize,
 				new ConfigurablePriorityThreadFactory(Thread.NORM_PRIORITY, getThreadGroupName()));
 
-		mWorking = new ConcurrentHashMap<MapTile, MapTileRequestState>();
+		mWorking = new HashMap<MapTile, MapTileRequestState>();
 		mPending = new LinkedHashMap<MapTile, MapTileRequestState>(pPendingQueueSize + 2, 0.1f,
 				true) {
 
@@ -100,13 +104,41 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 			@Override
 			protected boolean removeEldestEntry(
 					final Map.Entry<MapTile, MapTileRequestState> pEldest) {
-				return size() > pPendingQueueSize;
+				if (size() > pPendingQueueSize) {
+					MapTile result = null;
+
+					// get the oldest tile that isn't in the mWorking queue
+					Iterator<MapTile> iterator = mPending.keySet().iterator();
+
+					while (result == null && iterator.hasNext()) {
+						final MapTile tile = iterator.next();
+						if (!mWorking.containsKey(tile)) {
+							result = tile;
+						}
+					}
+
+					if (result != null) {
+						MapTileRequestState state = mPending.get(result);
+						removeTileFromQueues(result);
+						state.getCallback().mapTileRequestFailed(state);
+					}
+				}
+				return false;
 			}
 		};
 	}
 
 	public void loadMapTileAsync(final MapTileRequestState pState) {
-		synchronized (mPending) {
+		synchronized (mQueueLockObject) {
+			if (DEBUG_TILE_PROVIDERS) {
+				logger.debug("MapTileModuleProviderBase.loadMaptileAsync() on provider: "
+						+ getName() + " for tile: " + pState.getMapTile());
+				if (mPending.containsKey(pState.getMapTile()))
+					logger.debug("MapTileModuleProviderBase.loadMaptileAsync() tile already exists in request queue for modular provider. Moving to front of queue.");
+				else
+					logger.debug("MapTileModuleProviderBase.loadMaptileAsync() adding tile to request queue for modular provider.");
+			}
+
 			// this will put the tile in the queue, or move it to the front of
 			// the queue if it's already present
 			mPending.put(pState.getMapTile(), pState);
@@ -119,10 +151,10 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 	}
 
 	private void clearQueue() {
-		synchronized (mPending) {
+		synchronized (mQueueLockObject) {
 			mPending.clear();
+			mWorking.clear();
 		}
-		mWorking.clear();
 	}
 
 	/**
@@ -133,11 +165,15 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 		this.mExecutor.shutdown();
 	}
 
-	private void removeTileFromQueues(final MapTile mapTile) {
-		synchronized (mPending) {
+	void removeTileFromQueues(final MapTile mapTile) {
+		synchronized (mQueueLockObject) {
+			if (DEBUG_TILE_PROVIDERS) {
+				logger.debug("MapTileModuleProviderBase.removeTileFromQueues() on provider: "
+						+ getName() + " for tile: " + mapTile);
+			}
 			mPending.remove(mapTile);
+			mWorking.remove(mapTile);
 		}
-		mWorking.remove(mapTile);
 	}
 
 	/**
@@ -158,9 +194,17 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 		protected abstract Drawable loadTile(MapTileRequestState pState)
 				throws CantContinueException;
 
+		protected void onTileLoaderInit() {
+			// Do nothing by default
+		}
+
+		protected void onTileLoaderShutdown() {
+			// Do nothing by default
+		}
+
 		private MapTileRequestState nextTile() {
 
-			synchronized (mPending) {
+			synchronized (mQueueLockObject) {
 				MapTile result = null;
 
 				// get the most recently accessed tile
@@ -170,27 +214,21 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 
 				// TODO this iterates the whole list, make this faster...
 				while (iterator.hasNext()) {
-					try {
-						final MapTile tile = iterator.next();
-						if (!mWorking.containsKey(tile)) {
-							result = tile;
+					final MapTile tile = iterator.next();
+					if (!mWorking.containsKey(tile)) {
+						if (DEBUG_TILE_PROVIDERS) {
+							logger.debug("TileLoader.nextTile() on provider: " + getName()
+									+ " found tile in working queue: " + tile);
 						}
-					} catch (final ConcurrentModificationException e) {
-						if (DEBUGMODE) {
-							logger.warn("ConcurrentModificationException break: "
-									+ (result != null));
-						}
-
-						// if we've got a result return it, otherwise try again
-						if (result != null) {
-							break;
-						} else {
-							iterator = mPending.keySet().iterator();
-						}
+						result = tile;
 					}
 				}
 
 				if (result != null) {
+					if (DEBUG_TILE_PROVIDERS) {
+						logger.debug("TileLoader.nextTile() on provider: " + getName()
+								+ " adding tile to working queue: " + result);
+					}
 					mWorking.put(result, mPending.get(result));
 				}
 
@@ -201,7 +239,11 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 		/**
 		 * A tile has loaded.
 		 */
-		private void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
+		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
+			if (DEBUG_TILE_PROVIDERS) {
+				logger.debug("TileLoader.tileLoaded() on provider: " + getName() + " with tile: "
+						+ pState.getMapTile());
+			}
 			removeTileFromQueues(pState.getMapTile());
 			pState.getCallback().mapTileRequestCompleted(pState, pDrawable);
 		}
@@ -210,12 +252,20 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 		 * A tile has loaded but it's expired.
 		 * Return it <b>and</b> send request to next provider.
 		 */
-		private void tileLoadedExpired(final MapTileRequestState pState, final Drawable pDrawable) {
-			pState.getCallback().mapTileRequestCompleted(pState, pDrawable);
-			pState.getCallback().mapTileRequestFailed(pState);
+		protected void tileLoadedExpired(final MapTileRequestState pState, final Drawable pDrawable) {
+			if (DEBUG_TILE_PROVIDERS) {
+				logger.debug("TileLoader.tileLoadedExpired() on provider: " + getName()
+						+ " with tile: " + pState.getMapTile());
+			}
+			removeTileFromQueues(pState.getMapTile());
+			pState.getCallback().mapTileRequestExpiredTile(pState, pDrawable);
 		}
 
-		private void tileLoadedFailed(final MapTileRequestState pState) {
+		protected void tileLoadedFailed(final MapTileRequestState pState) {
+			if (DEBUG_TILE_PROVIDERS) {
+				logger.debug("TileLoader.tileLoadedFailed() on provider: " + getName()
+						+ " with tile: " + pState.getMapTile());
+			}
 			removeTileFromQueues(pState.getMapTile());
 			pState.getCallback().mapTileRequestFailed(pState);
 		}
@@ -226,11 +276,13 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 		@Override
 		final public void run() {
 
+			onTileLoaderInit();
+
 			MapTileRequestState state;
 			Drawable result = null;
 			while ((state = nextTile()) != null) {
-				if (DEBUGMODE) {
-					logger.debug("Next tile: " + state.getMapTile());
+				if (DEBUG_TILE_PROVIDERS) {
+					logger.debug("TileLoader.run() processing next tile: " + state.getMapTile());
 				}
 				try {
 					result = null;
@@ -249,11 +301,9 @@ public abstract class MapTileModuleProviderBase implements OpenStreetMapTileProv
 				} else {
 					tileLoaded(state, result);
 				}
-
-				if (DEBUGMODE) {
-					logger.debug("No more tiles");
-				}
 			}
+
+			onTileLoaderShutdown();
 		}
 	}
 

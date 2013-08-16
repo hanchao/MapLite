@@ -74,6 +74,7 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 
 	public void addItem(final int location, final Item item) {
 		mItemList.add(location, item);
+		populate();
 	}
 
 	public boolean addItems(final List<Item> items) {
@@ -113,7 +114,7 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 	 * resorting to overriding the ItemGestureListener methods.
 	 */
 	@Override
-	public boolean onSingleTapUp(final MotionEvent event, final MapView mapView) {
+	public boolean onSingleTapConfirmed(final MotionEvent event, final MapView mapView) {
 		return (activateSelectedItems(event, mapView, new ActiveItem() {
 			@Override
 			public boolean run(final int index) {
@@ -123,7 +124,7 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 				}
 				return onSingleTapUpHelper(index, that.mItemList.get(index), mapView);
 			}
-		})) ? true : super.onSingleTapUp(event, mapView);
+		})) ? true : super.onSingleTapConfirmed(event, mapView);
 	}
 
 	protected boolean onSingleTapUpHelper(final int index, final Item item, final MapView mapView) {

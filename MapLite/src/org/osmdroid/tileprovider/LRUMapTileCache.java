@@ -9,15 +9,21 @@ import org.slf4j.LoggerFactory;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 public class LRUMapTileCache extends LinkedHashMap<MapTile, Drawable>
 	implements OpenStreetMapTileProviderConstants {
+
+	public interface TileRemovedListener {
+		void onTileRemoved(MapTile mapTile);
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(LRUMapTileCache.class);
 
 	private static final long serialVersionUID = -541142277575493335L;
 
 	private int mCapacity;
+	private TileRemovedListener mTileRemovedListener;
 
 	public LRUMapTileCache(final int aCapacity) {
 		super(aCapacity + 2, 0.1f, true);
@@ -34,12 +40,17 @@ public class LRUMapTileCache extends LinkedHashMap<MapTile, Drawable>
 	@Override
 	public Drawable remove(final Object aKey) {
 		final Drawable drawable = super.remove(aKey);
-		if (drawable instanceof BitmapDrawable) {
-			final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-			if (bitmap != null) {
-				bitmap.recycle();
+		// Only recycle if we are running on a project less than 2.3.3 Gingerbread.
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+			if (drawable instanceof BitmapDrawable) {
+				final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+				if (bitmap != null) {
+					bitmap.recycle();
+				}
 			}
 		}
+		if (getTileRemovedListener() != null && aKey instanceof MapTile)
+			getTileRemovedListener().onTileRemoved((MapTile) aKey);
 		return drawable;
 	}
 
@@ -65,5 +76,13 @@ public class LRUMapTileCache extends LinkedHashMap<MapTile, Drawable>
 			// don't return true because we've already removed it
 		}
 		return false;
+	}
+
+	public TileRemovedListener getTileRemovedListener() {
+		return mTileRemovedListener;
+	}
+
+	public void setTileRemovedListener(TileRemovedListener tileRemovedListener) {
+		mTileRemovedListener = tileRemovedListener;
 	}
 }

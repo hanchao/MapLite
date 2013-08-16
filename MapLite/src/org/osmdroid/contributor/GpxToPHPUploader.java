@@ -13,10 +13,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.osmdroid.contributor.util.RecordedGeoPoint;
 import org.osmdroid.contributor.util.RecordedRouteGPXFormatter;
 import org.osmdroid.contributor.util.Util;
+import org.osmdroid.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class GpxToPHPUploader {
 
 					final InputStream gpxInputStream = new ByteArrayInputStream(
 							RecordedRouteGPXFormatter.create(recordedGeoPoints).getBytes());
-					final HttpClient httpClient = new DefaultHttpClient();
+					final HttpClient httpClient = HttpClientFactory.createHttpClient();
 
 					final HttpPost request = new HttpPost(UPLOADSCRIPT_URL);
 
