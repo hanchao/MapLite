@@ -27,7 +27,7 @@ public interface OpenStreetMapTileProviderConstants {
 
 	/** Base path for osmdroid files. Zip files are in this folder. */
 	public static final File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),
-			"osmdroid");
+			"mutumapapi");
 
 	/** Base path for tiles. */
 	public static final File TILE_PATH_BASE = new File(OSMDROID_PATH, "tiles");
