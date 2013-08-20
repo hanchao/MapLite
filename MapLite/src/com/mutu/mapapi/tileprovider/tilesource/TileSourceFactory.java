@@ -134,10 +134,24 @@ public class TileSourceFactory {
 			ResourceProxy.string.arcgis_world_magery, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/");
 	
 	public static final OnlineTileSourceBase GOOGLE = new GoogleTileSource("Google",
-			ResourceProxy.string.google, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&");
+			ResourceProxy.string.google, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			"http://mt0.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
+			"http://mt1.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
+			"http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
+			"http://mt3.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&");
 		
 	public static final OnlineTileSourceBase BAIDU = new BaiduTileSource("Baidu",
-			ResourceProxy.string.baidu, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://shangetu0.map.bdimg.com/it/");
+			ResourceProxy.string.baidu, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			"http://shangetu0.map.bdimg.com/it/",
+			"http://shangetu1.map.bdimg.com/it/",
+			"http://shangetu2.map.bdimg.com/it/",
+			"http://shangetu3.map.bdimg.com/it/",
+			"http://shangetu4.map.bdimg.com/it/",
+			"http://shangetu5.map.bdimg.com/it/",
+			"http://shangetu6.map.bdimg.com/it/",
+			"http://shangetu7.map.bdimg.com/it/",
+			"http://shangetu8.map.bdimg.com/it/",
+			"http://shangetu9.map.bdimg.com/it/");
 	
 	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
 			ResourceProxy.string.tianditu_vec, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec", 
@@ -166,12 +180,12 @@ public class TileSourceFactory {
 		mTileSources = new ArrayList<ITileSource>();
 		mTileSources.add(MAPNIK);
 		mTileSources.add(CYCLEMAP);
-		mTileSources.add(PUBLIC_TRANSPORT);
-		mTileSources.add(BASE);
-		mTileSources.add(TOPO);
-		mTileSources.add(HILLS);
-		mTileSources.add(CLOUDMADESTANDARDTILES);
-		mTileSources.add(CLOUDMADESMALLTILES);
+//		mTileSources.add(PUBLIC_TRANSPORT);
+//		mTileSources.add(BASE);
+//		mTileSources.add(TOPO);
+//		mTileSources.add(HILLS);
+//		mTileSources.add(CLOUDMADESTANDARDTILES);
+//		mTileSources.add(CLOUDMADESMALLTILES);
 		mTileSources.add(MAPQUESTOSM);
 		mTileSources.add(MAPQUESTAERIAL);
 		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
