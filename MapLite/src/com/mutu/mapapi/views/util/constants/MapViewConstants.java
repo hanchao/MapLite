@@ -32,5 +32,5 @@ public interface MapViewConstants {
 	 * Maximum Zoom Level - we use Integers to store zoom levels so overflow happens at 2^32 - 1,
 	 * but we also have a tile size that is typically 2^8, so (32-1)-8-1 = 22
 	 */
-	public static final int MAXIMUM_ZOOMLEVEL = 22;
+	public static final int MAXIMUM_ZOOMLEVEL = 21;
 }
