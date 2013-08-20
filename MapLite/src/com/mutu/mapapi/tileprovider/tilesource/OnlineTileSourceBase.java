@@ -2,6 +2,7 @@ package com.mutu.mapapi.tileprovider.tilesource;
 
 
 import com.mutu.mapapi.ResourceProxy.string;
+import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.MapTile;
 
 public abstract class OnlineTileSourceBase extends BitmapTileSourceBase {
@@ -10,8 +11,9 @@ public abstract class OnlineTileSourceBase extends BitmapTileSourceBase {
 
 	public OnlineTileSourceBase(final String aName, final string aResourceId,
 			final int aZoomMinLevel, final int aZoomMaxLevel, final int aTileSizePixels,
+			final TileSystem aTileSystem,
 			final String aImageFilenameEnding, final String... aBaseUrl) {
-		super(aName, aResourceId, aZoomMinLevel, aZoomMaxLevel, aTileSizePixels,
+		super(aName, aResourceId, aZoomMinLevel, aZoomMaxLevel, aTileSizePixels,aTileSystem,
 				aImageFilenameEnding);
 		mBaseUrls = aBaseUrl;
 	}

@@ -170,8 +170,9 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 		final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - pj.getZoomLevel();
 
 		if (mDrawAccuracyEnabled) {
+			TileSystem tileSystem = mMapView.getTileProvider().getTileSource().getTileSystem();
 			final float radius = lastFix.getAccuracy()
-					/ (float) TileSystem.GroundResolution(lastFix.getLatitude(),
+					/ (float) tileSystem.GroundResolution(lastFix.getLatitude(),
 							mapView.getZoomLevel());
 
 			mCirclePaint.setAlpha(50);
@@ -251,8 +252,9 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 
 		// Add in the accuracy circle if enabled
 		if (mDrawAccuracyEnabled) {
+			TileSystem tileSystem = mMapView.getTileProvider().getTileSource().getTileSystem();
 			final int radius = (int) FloatMath.ceil(lastFix.getAccuracy()
-					/ (float) TileSystem.GroundResolution(lastFix.getLatitude(), zoomLevel));
+					/ (float) tileSystem.GroundResolution(lastFix.getLatitude(), zoomLevel));
 			reuse.union(posX - radius, posY - radius, posX + radius, posY + radius);
 			final int strokeWidth = (int) FloatMath.ceil(mCirclePaint.getStrokeWidth() == 0 ? 1
 					: mCirclePaint.getStrokeWidth());
@@ -383,10 +385,12 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 		if (isMyLocationEnabled()) {
 			mLocation = mMyLocationProvider.getLastKnownLocation();
 			if (mLocation != null) {
-				TileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
+				TileSystem tileSystem = mMapView.getTileProvider().getTileSource().getTileSystem();
+				tileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
 						MapViewConstants.MAXIMUM_ZOOMLEVEL, mMapCoords);
-				final int worldSize_2 = TileSystem.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-				mMapCoords.offset(-worldSize_2, -worldSize_2);
+				final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+				final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+				mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
 				mMapController.animateTo(new GeoPoint(mLocation));
 			}
 		}
@@ -427,10 +431,13 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 		mMapCoords.set(0, 0);
 
 		if (mLocation != null) {
-			TileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
+			
+			TileSystem tileSystem = mMapView.getTileProvider().getTileSource().getTileSystem();
+			tileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
 					MapViewConstants.MAXIMUM_ZOOMLEVEL, mMapCoords);
-			final int worldSize_2 = TileSystem.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-			mMapCoords.offset(-worldSize_2, -worldSize_2);
+			final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+			final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+			mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
 
 			if (mIsFollowing) {
 				mMapController.animateTo(mLocation.getLatitude(), mLocation.getLongitude());
@@ -486,10 +493,12 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 		if (result && isFollowLocationEnabled()) {
 			mLocation = mMyLocationProvider.getLastKnownLocation();
 			if (mLocation != null) {
-				TileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
+				TileSystem tileSystem = mMapView.getTileProvider().getTileSource().getTileSystem();
+				tileSystem.LatLongToPixelXY(mLocation.getLatitude(), mLocation.getLongitude(),
 						MapViewConstants.MAXIMUM_ZOOMLEVEL, mMapCoords);
-				final int worldSize_2 = TileSystem.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-				mMapCoords.offset(-worldSize_2, -worldSize_2);
+				final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+				final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+				mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
 				mMapController.animateTo(new GeoPoint(mLocation));
 			}
 		}

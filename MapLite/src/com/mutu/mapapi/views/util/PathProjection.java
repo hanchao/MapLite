@@ -5,6 +5,7 @@ import java.util.List;
 
 
 import com.mutu.mapapi.mappoint.TileSystem;
+import com.mutu.mapapi.mappoint.TileSystemFactory;
 import com.mutu.mapapi.util.BoundingBoxE6;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.views.MapView.Projection;
@@ -30,25 +31,26 @@ public class PathProjection {
 		final Path out = (reuse != null) ? reuse : new Path();
 		out.incReserve(in.size());
 
+		TileSystem tileSystem = TileSystemFactory.getTileSystem("Mercator");
 		boolean first = true;
 		for (final GeoPoint gp : in) {
-			final Point underGeopointTileCoords = TileSystem.LatLongToPixelXY(
+			final Point underGeopointTileCoords = tileSystem.LatLongToPixelXY(
 					gp.getLatitudeE6() / 1E6, gp.getLongitudeE6() / 1E6, projection.getZoomLevel(),
 					null);
-			TileSystem.PixelXYToTileXY(underGeopointTileCoords.x, underGeopointTileCoords.y,
+			tileSystem.PixelXYToTileXY(underGeopointTileCoords.x, underGeopointTileCoords.y,
 					underGeopointTileCoords);
 
 			/*
 			 * Calculate the Latitude/Longitude on the left-upper ScreenCoords of the MapTile.
 			 */
-			final Point upperRight = TileSystem.TileXYToPixelXY(underGeopointTileCoords.x,
+			final Point upperRight = tileSystem.TileXYToPixelXY(underGeopointTileCoords.x,
 					underGeopointTileCoords.y, null);
-			final Point lowerLeft = TileSystem.TileXYToPixelXY(underGeopointTileCoords.x
-					+ TileSystem.getTileSize(),
-					underGeopointTileCoords.y + TileSystem.getTileSize(), null);
-			final GeoPoint neGeoPoint = TileSystem.PixelXYToLatLong(upperRight.x, upperRight.y,
+			final Point lowerLeft = tileSystem.TileXYToPixelXY(underGeopointTileCoords.x
+					+ tileSystem.getTileSize(),
+					underGeopointTileCoords.y + tileSystem.getTileSize(), null);
+			final GeoPoint neGeoPoint = tileSystem.PixelXYToLatLong(upperRight.x, upperRight.y,
 					projection.getZoomLevel(), null);
-			final GeoPoint swGeoPoint = TileSystem.PixelXYToLatLong(lowerLeft.x, lowerLeft.y,
+			final GeoPoint swGeoPoint = tileSystem.PixelXYToLatLong(lowerLeft.x, lowerLeft.y,
 					projection.getZoomLevel(), null);
 			final BoundingBoxE6 bb = new BoundingBoxE6(neGeoPoint.getLatitudeE6(),
 					neGeoPoint.getLongitudeE6(), swGeoPoint.getLatitudeE6(),
@@ -66,21 +68,21 @@ public class PathProjection {
 			}
 
 			final Rect screenRect = projection.getScreenRect();
-			Point centerMapTileCoords = TileSystem.PixelXYToTileXY(screenRect.centerX(),
+			Point centerMapTileCoords = tileSystem.PixelXYToTileXY(screenRect.centerX(),
 					screenRect.centerY(), null);
-			final Point upperLeftCornerOfCenterMapTile = TileSystem.TileXYToPixelXY(
+			final Point upperLeftCornerOfCenterMapTile = tileSystem.TileXYToPixelXY(
 					centerMapTileCoords.x, centerMapTileCoords.y, null);
 			final int tileDiffX = centerMapTileCoords.x - underGeopointTileCoords.x;
 			final int tileDiffY = centerMapTileCoords.y - underGeopointTileCoords.y;
 			final int underGeopointTileScreenLeft = upperLeftCornerOfCenterMapTile.x
-					- (TileSystem.getTileSize() * tileDiffX);
+					- (tileSystem.getTileSize() * tileDiffX);
 			final int underGeopointTileScreenTop = upperLeftCornerOfCenterMapTile.y
-					- (TileSystem.getTileSize() * tileDiffY);
+					- (tileSystem.getTileSize() * tileDiffY);
 
 			final int x = underGeopointTileScreenLeft
-					+ (int) (relativePositionInCenterMapTile.x * TileSystem.getTileSize());
+					+ (int) (relativePositionInCenterMapTile.x * tileSystem.getTileSize());
 			final int y = underGeopointTileScreenTop
-					+ (int) (relativePositionInCenterMapTile.y * TileSystem.getTileSize());
+					+ (int) (relativePositionInCenterMapTile.y * tileSystem.getTileSize());
 
 			/* Add up the offset caused by touch. */
 			if (first) {

@@ -142,7 +142,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		mResourceProxy = resourceProxy;
 		this.mController = new MapController(this);
 		this.mScroller = new Scroller(context);
-		TileSystem.setTileSize(tileSizePixels);
+		//TileSystem.setTileSize(tileSizePixels);
 
 		if (tileProvider == null) {
 			final ITileSource tileSource = getTileSourceFromAttributes(attrs);
@@ -251,13 +251,15 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 	public BoundingBoxE6 getBoundingBox(final int pViewWidth, final int pViewHeight) {
 
-		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		final int worldWidth_2 = tileSystem.MapWidthPixelSize(mZoomLevel) / 2;
+		final int worldHeigth_2 = tileSystem.MapHeigthPixelSize(mZoomLevel) / 2;
 		final Rect screenRect = getScreenRect(null);
-		screenRect.offset(world_2, world_2);
+		screenRect.offset(worldWidth_2, worldHeigth_2);
 
-		final IGeoPoint neGeoPoint = TileSystem.PixelXYToLatLong(screenRect.right, screenRect.top,
+		final IGeoPoint neGeoPoint = tileSystem.PixelXYToLatLong(screenRect.right, screenRect.top,
 				mZoomLevel, null);
-		final IGeoPoint swGeoPoint = TileSystem.PixelXYToLatLong(screenRect.left,
+		final IGeoPoint swGeoPoint = tileSystem.PixelXYToLatLong(screenRect.left,
 				screenRect.bottom, mZoomLevel, null);
 
 		return new BoundingBoxE6(neGeoPoint.getLatitudeE6(), neGeoPoint.getLongitudeE6(),
@@ -308,14 +310,17 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	}
 
 	void setMapCenter(final int aLatitudeE6, final int aLongitudeE6) {
-		final Point coords = TileSystem.LatLongToPixelXY(aLatitudeE6 / 1E6, aLongitudeE6 / 1E6,
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		
+		final Point coords = tileSystem.LatLongToPixelXY(aLatitudeE6 / 1E6, aLongitudeE6 / 1E6,
 				getZoomLevel(false), null);
-		final int worldSize_2 = TileSystem.MapSize(this.getZoomLevel(false)) / 2;
+		final int worldWidth_2 = tileSystem.MapWidthPixelSize(this.getZoomLevel(false)) / 2;
+		final int worldHeigth_2 = tileSystem.MapHeigthPixelSize(this.getZoomLevel(false)) / 2;
 		if (getAnimation() == null || getAnimation().hasEnded()) {
 			logger.debug("StartScroll");
 			mIsFlinging = false;
 			mScroller.startScroll(getScrollX(), getScrollY(),
-					coords.x - worldSize_2 - getScrollX(), coords.y - worldSize_2 - getScrollY(),
+					coords.x - worldWidth_2 - getScrollX(), coords.y - worldHeigth_2 - getScrollY(),
 					500);
 			postInvalidate();
 		}
@@ -323,7 +328,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 	public void setTileSource(final ITileSource aTileSource) {
 		mTileProvider.setTileSource(aTileSource);
-		TileSystem.setTileSize(aTileSource.getTileSizePixels());
+		//TileSystem.setTileSize(aTileSource.getTileSizePixels());
 		this.checkZoomButtons();
 		this.setZoomLevel(mZoomLevel); // revalidate zoom level
 		postInvalidate();
@@ -351,14 +356,17 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		if (newZoomLevel > curZoomLevel) {
 			// We are going from a lower-resolution plane to a higher-resolution plane, so we have
 			// to do it the hard way.
-			final int worldSize_current_2 = TileSystem.MapSize(curZoomLevel) / 2;
-			final int worldSize_new_2 = TileSystem.MapSize(newZoomLevel) / 2;
-			final IGeoPoint centerGeoPoint = TileSystem.PixelXYToLatLong(getScrollX()
-					+ worldSize_current_2, getScrollY() + worldSize_current_2, curZoomLevel, null);
-			final Point centerPoint = TileSystem.LatLongToPixelXY(
+			TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+			final int worldWidthSize_current_2 = tileSystem.MapWidthPixelSize(curZoomLevel) / 2;
+			final int worldHeigthSize_current_2 = tileSystem.MapHeigthPixelSize(curZoomLevel) / 2;
+			final int worldWidthSize_new_2 = tileSystem.MapWidthPixelSize(newZoomLevel) / 2;
+			final int worldHeigthSize_new_2 = tileSystem.MapHeigthPixelSize(newZoomLevel) / 2;
+			final IGeoPoint centerGeoPoint = tileSystem.PixelXYToLatLong(getScrollX()
+					+ worldWidthSize_current_2, getScrollY() + worldHeigthSize_current_2, curZoomLevel, null);
+			final Point centerPoint = tileSystem.LatLongToPixelXY(
 					centerGeoPoint.getLatitudeE6() / 1E6, centerGeoPoint.getLongitudeE6() / 1E6,
 					newZoomLevel, null);
-			scrollTo(centerPoint.x - worldSize_new_2, centerPoint.y - worldSize_new_2);
+			scrollTo(centerPoint.x - worldWidthSize_new_2, centerPoint.y - worldHeigthSize_new_2);
 		} else if (newZoomLevel < curZoomLevel) {
 			// We are going from a higher-resolution plane to a lower-resolution plane, so we can do
 			// it the easy way.
@@ -573,10 +581,12 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 */
 	@Override
 	public IGeoPoint getMapCenter() {
-		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		final int worldWidth_2 = tileSystem.MapWidthPixelSize(mZoomLevel) / 2;
+		final int worldHeigth_2 = tileSystem.MapHeigthPixelSize(mZoomLevel) / 2;
 		final Rect screenRect = getScreenRect(null);
-		screenRect.offset(world_2, world_2);
-		return TileSystem.PixelXYToLatLong(screenRect.centerX(), screenRect.centerY(), mZoomLevel,
+		screenRect.offset(worldWidth_2, worldHeigth_2);
+		return tileSystem.PixelXYToLatLong(screenRect.centerX(), screenRect.centerY(), mZoomLevel,
 				null);
 	}
 
@@ -621,7 +631,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 *            limitations
 	 */
 	public void setScrollableAreaLimit(BoundingBoxE6 boundingBox) {
-		final int worldSize_2 = TileSystem.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
 
 		mScrollableAreaBoundingBox = boundingBox;
 
@@ -632,14 +644,14 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		}
 
 		// Get NW/upper-left
-		final Point upperLeft = TileSystem.LatLongToPixelXY(boundingBox.getLatNorthE6() / 1E6,
+		final Point upperLeft = tileSystem.LatLongToPixelXY(boundingBox.getLatNorthE6() / 1E6,
 				boundingBox.getLonWestE6() / 1E6, MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
-		upperLeft.offset(-worldSize_2, -worldSize_2);
+		upperLeft.offset(-worldWidthSize_2, -worldHeigthSize_2);
 
 		// Get SE/lower-right
-		final Point lowerRight = TileSystem.LatLongToPixelXY(boundingBox.getLatSouthE6() / 1E6,
+		final Point lowerRight = tileSystem.LatLongToPixelXY(boundingBox.getLatSouthE6() / 1E6,
 				boundingBox.getLonEastE6() / 1E6, MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
-		lowerRight.offset(-worldSize_2, -worldSize_2);
+		lowerRight.offset(-worldWidthSize_2, -worldHeigthSize_2);
 		mScrollableAreaLimit = new Rect(upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 	}
 
@@ -982,18 +994,21 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 	@Override
 	public void scrollTo(int x, int y) {
-		final int worldSize_2 = TileSystem.MapSize(this.getZoomLevel(false)) / 2;
-		while (x < -worldSize_2) {
-			x += worldSize_2 * 2;
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		final int worldWidth_2 = tileSystem.MapWidthPixelSize(this.getZoomLevel(false)) / 2;
+		final int worldHeigth_2 = tileSystem.MapHeigthPixelSize(this.getZoomLevel(false)) / 2;
+
+		while (x < -worldWidth_2) {
+			x += worldWidth_2 * 2;
 		}
-		while (x > worldSize_2) {
-			x -= worldSize_2 * 2;
+		while (x > worldWidth_2) {
+			x -= worldWidth_2 * 2;
 		}
-		while (y < -worldSize_2) {
-			y += worldSize_2 * 2;
+		while (y < -worldHeigth_2) {
+			y += worldHeigth_2 * 2;
 		}
-		while (y > worldSize_2) {
-			y -= worldSize_2 * 2;
+		while (y > worldHeigth_2) {
+			y -= worldHeigth_2 * 2;
 		}
 
 		if (mScrollableAreaLimit != null) {
@@ -1278,9 +1293,11 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		private final int viewWidth_2 = getWidth() / 2;
 		private final int viewHeight_2 = getHeight() / 2;
-		private final int worldSize_2 = TileSystem.MapSize(mZoomLevel) / 2;
-		private final int offsetX = -worldSize_2;
-		private final int offsetY = -worldSize_2;
+		private final TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		private final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(mZoomLevel) / 2;
+		private final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(mZoomLevel) / 2;
+		private final int offsetX = -worldWidthSize_2;
+		private final int offsetY = -worldHeigthSize_2;
 
 		private final BoundingBoxE6 mBoundingBoxProjection;
 		private final int mZoomLevelProjection;
@@ -1319,7 +1336,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		 */
 		@Deprecated
 		public int getTileSizePixels() {
-			return TileSystem.getTileSize();
+			return tileSystem.getTileSize();
 		}
 
 		/**
@@ -1330,7 +1347,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		@Deprecated
 		public Point getCenterMapTileCoords() {
 			final Rect rect = getScreenRect();
-			return TileSystem.PixelXYToTileXY(rect.centerX(), rect.centerY(), null);
+			return tileSystem.PixelXYToTileXY(rect.centerX(), rect.centerY(), null);
 		}
 
 		/**
@@ -1341,7 +1358,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		@Deprecated
 		public Point getUpperLeftCornerOfCenterMapTile() {
 			final Point centerMapTileCoords = getCenterMapTileCoords();
-			return TileSystem.TileXYToPixelXY(centerMapTileCoords.x, centerMapTileCoords.y, null);
+			return tileSystem.TileXYToPixelXY(centerMapTileCoords.x, centerMapTileCoords.y, null);
 		}
 
 		/**
@@ -1353,8 +1370,8 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		 */
 		public IGeoPoint fromPixels(final float x, final float y) {
 			final Rect screenRect = getIntrinsicScreenRect();
-			return TileSystem.PixelXYToLatLong(screenRect.left + (int) x + worldSize_2,
-					screenRect.top + (int) y + worldSize_2, mZoomLevelProjection, null);
+			return tileSystem.PixelXYToLatLong(screenRect.left + (int) x + worldWidthSize_2,
+					screenRect.top + (int) y + worldHeigthSize_2, mZoomLevelProjection, null);
 		}
 
 		public Point fromMapPixels(final int x, final int y, final Point reuse) {
@@ -1375,18 +1392,18 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		 */
 		public Point toMapPixels(final IGeoPoint in, final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
-			TileSystem.LatLongToPixelXY(
+			tileSystem.LatLongToPixelXY(
 							in.getLatitudeE6() / 1E6,
 							in.getLongitudeE6() / 1E6,
 							getZoomLevel(), out);
 			out.offset(offsetX, offsetY);
 			if (Math.abs(out.x - getScrollX()) >
-				Math.abs(out.x - TileSystem.MapSize(getZoomLevel()) - getScrollX())) {
-				out.x -= TileSystem.MapSize(getZoomLevel());
+				Math.abs(out.x - tileSystem.MapWidthPixelSize(getZoomLevel()) - getScrollX())) {
+				out.x -= tileSystem.MapWidthPixelSize(getZoomLevel());
 			}
 			if (Math.abs(out.y - getScrollY()) >
-				Math.abs(out.y - TileSystem.MapSize(getZoomLevel()) - getScrollY())) {
-				out.y -= TileSystem.MapSize(getZoomLevel());
+				Math.abs(out.y - tileSystem.MapHeigthPixelSize(getZoomLevel()) - getScrollY())) {
+				out.y -= tileSystem.MapHeigthPixelSize(getZoomLevel());
 			}
 			return out;
 		}
@@ -1407,7 +1424,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 				final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
 
-			TileSystem
+			tileSystem
 					.LatLongToPixelXY(latituteE6 / 1E6, longitudeE6 / 1E6, MAXIMUM_ZOOMLEVEL, out);
 			return out;
 		}
@@ -1465,7 +1482,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		 */
 		@Deprecated
 		public Point toPixels(final int tileX, final int tileY, final Point reuse) {
-			return TileSystem.TileXYToPixelXY(tileX, tileY, reuse);
+			return tileSystem.TileXYToPixelXY(tileX, tileY, reuse);
 		}
 
 		// not presently used
@@ -1491,7 +1508,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		@Override
 		public float metersToEquatorPixels(final float meters) {
-			return meters / (float) TileSystem.GroundResolution(0, mZoomLevelProjection);
+			return meters / (float) tileSystem.GroundResolution(0, mZoomLevelProjection);
 		}
 
 		@Override
@@ -1532,10 +1549,12 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 				return true;
 			}
 
-			final int worldSize = TileSystem.MapSize(MapView.this.getZoomLevel(false));
+			TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+			final int worldWidthSize = tileSystem.MapWidthPixelSize(MapView.this.getZoomLevel(false));
+			final int worldHeigthSize = tileSystem.MapHeigthPixelSize(MapView.this.getZoomLevel(false));
 			mIsFlinging = true;
 			mScroller.fling(getScrollX(), getScrollY(), (int) -velocityX, (int) -velocityY,
-					-worldSize, worldSize, -worldSize, worldSize);
+					-worldWidthSize, worldWidthSize, -worldHeigthSize, worldHeigthSize);
 			return true;
 		}
 

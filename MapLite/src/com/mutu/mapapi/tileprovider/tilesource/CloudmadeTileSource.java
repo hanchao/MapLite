@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.ResourceProxy;
+import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.util.CloudmadeUtil;
 
@@ -15,8 +16,9 @@ public class CloudmadeTileSource extends OnlineTileSourceBase implements IStyled
 
 	public CloudmadeTileSource(final String pName, final ResourceProxy.string pResourceId,
 			final int pZoomMinLevel, final int pZoomMaxLevel, final int pTileSizePixels,
+			final TileSystem aTileSystem,
 			final String pImageFilenameEnding, final String... pBaseUrl) {
-		super(pName, pResourceId, pZoomMinLevel, pZoomMaxLevel, pTileSizePixels,
+		super(pName, pResourceId, pZoomMinLevel, pZoomMaxLevel, pTileSizePixels,aTileSystem,
 				pImageFilenameEnding, pBaseUrl);
 	}
 

@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 
 import com.mutu.mapapi.ResourceProxy;
+import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.tilesource.BitmapTileSourceBase.LowMemoryException;
 
@@ -83,4 +84,6 @@ public interface ITileSource {
 	 * @return the tile size in pixels
 	 */
 	public int getTileSizePixels();
+	
+	public TileSystem getTileSystem();
 }

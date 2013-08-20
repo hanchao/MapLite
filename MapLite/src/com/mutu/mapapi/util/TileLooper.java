@@ -2,6 +2,7 @@ package com.mutu.mapapi.util;
 
 
 import com.mutu.mapapi.mappoint.TileSystem;
+import com.mutu.mapapi.mappoint.TileSystemFactory;
 import com.mutu.mapapi.tileprovider.MapTile;
 
 import android.graphics.Canvas;
@@ -16,13 +17,14 @@ public abstract class TileLooper {
 	protected final Point mUpperLeft = new Point();
 	protected final Point mLowerRight = new Point();
 
-	public final void loop(final Canvas pCanvas, final int pZoomLevel, final int pTileSizePx, final Rect pViewPort) {
+	public final void loop(final Canvas pCanvas, final int pZoomLevel, final int pTileSizePx, final Rect pViewPort, TileSystem tileSystem) {
 		// Calculate the amount of tiles needed for each side around the center one.
-		TileSystem.PixelXYToTileXY(pViewPort.left, pViewPort.top, mUpperLeft);
+		tileSystem.PixelXYToTileXY(pViewPort.left, pViewPort.top, mUpperLeft);
 		mUpperLeft.offset(-1, -1);
-		TileSystem.PixelXYToTileXY(pViewPort.right, pViewPort.bottom, mLowerRight);
+		tileSystem.PixelXYToTileXY(pViewPort.right, pViewPort.bottom, mLowerRight);
 
-		final int mapTileUpperBound = 1 << pZoomLevel;
+		final int mapTileWidthUpperBound = tileSystem.MapWidthTileSize(pZoomLevel);
+		final int mapTileHeigthUpperBound = tileSystem.MapHeigthTileSize(pZoomLevel);
 
 		initialiseLoop(pZoomLevel, pTileSizePx);
 
@@ -30,8 +32,8 @@ public abstract class TileLooper {
 		for (int y = mUpperLeft.y; y <= mLowerRight.y; y++) {
 			for (int x = mUpperLeft.x; x <= mLowerRight.x; x++) {
 				// Construct a MapTile to request from the tile provider.
-				final int tileY = MyMath.mod(y, mapTileUpperBound);
-				final int tileX = MyMath.mod(x, mapTileUpperBound);
+				final int tileY = MyMath.mod(y, mapTileHeigthUpperBound);
+				final int tileX = MyMath.mod(x, mapTileWidthUpperBound);
 				final MapTile tile = new MapTile(pZoomLevel, tileX, tileY);
 				handleTile(pCanvas, pTileSizePx, tile, x, y);
 			}

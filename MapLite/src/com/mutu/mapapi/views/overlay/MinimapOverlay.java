@@ -35,7 +35,8 @@ public class MinimapOverlay extends TilesOverlay {
 	private int mPadding = 10;
 	private int mZoomDifference;
 	private final SafePaint mPaint;
-	private int mWorldSize_2;
+	private int mWorldWidthSize_2;
+	private int mWorldHeigthSize_2;
 
 	// The Mercator coordinates of what is on the screen
 	final private Rect mViewportRect = new Rect();
@@ -142,11 +143,14 @@ public class MinimapOverlay extends TilesOverlay {
 		// Calculate the half-world size
 		final Projection projection = pOsmv.getProjection();
 		final int zoomLevel = projection.getZoomLevel();
-		mWorldSize_2 = TileSystem.MapSize(zoomLevel) / 2;
-
+		
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		mWorldWidthSize_2 = tileSystem.MapWidthPixelSize(zoomLevel) / 2;
+		mWorldHeigthSize_2 = tileSystem.MapHeigthPixelSize(zoomLevel) / 2;
+		
 		// Save the Mercator coordinates of what is on the screen
 		mViewportRect.set(projection.getScreenRect());
-		mViewportRect.offset(mWorldSize_2, mWorldSize_2);
+		mViewportRect.offset(mWorldWidthSize_2, mWorldHeigthSize_2);
 
 		// Start calculating the tile area with the current viewport
 		mTileArea.set(mViewportRect);
@@ -176,14 +180,14 @@ public class MinimapOverlay extends TilesOverlay {
 		mMiniMapCanvasRect.set(mViewportRect.right - getPadding() - getWidth(),
 				mViewportRect.bottom - getPadding() - getHeight(), mViewportRect.right
 						- getPadding(), mViewportRect.bottom - getPadding());
-		mMiniMapCanvasRect.offset(-mWorldSize_2, -mWorldSize_2);
+		mMiniMapCanvasRect.offset(-mWorldWidthSize_2, -mWorldHeigthSize_2);
 
 		// Draw a solid background where the minimap will be drawn with a 2 pixel inset
 		pC.drawRect(mMiniMapCanvasRect.left - 2, mMiniMapCanvasRect.top - 2,
 				mMiniMapCanvasRect.right + 2, mMiniMapCanvasRect.bottom + 2, mPaint);
 
 		super.drawTiles(pC.getSafeCanvas(), projection.getZoomLevel() - miniMapZoomLevelDifference,
-				TileSystem.getTileSize(), mTileArea);
+				tileSystem.getTileSize(), mTileArea);
 	}
 
 	@Override
@@ -217,8 +221,8 @@ public class MinimapOverlay extends TilesOverlay {
 	@Override
 	public boolean onSingleTapUp(final MotionEvent pEvent, final MapView pMapView) {
 		// Consume event so layers underneath don't receive
-		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldSize_2,
-				(int) pEvent.getY() + mViewportRect.top - mWorldSize_2)) {
+		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldWidthSize_2,
+				(int) pEvent.getY() + mViewportRect.top - mWorldHeigthSize_2)) {
 			return true;
 		}
 
@@ -228,8 +232,8 @@ public class MinimapOverlay extends TilesOverlay {
 	@Override
 	public boolean onDoubleTap(final MotionEvent pEvent, final MapView pMapView) {
 		// Consume event so layers underneath don't receive
-		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldSize_2,
-				(int) pEvent.getY() + mViewportRect.top - mWorldSize_2)) {
+		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldWidthSize_2,
+				(int) pEvent.getY() + mViewportRect.top - mWorldHeigthSize_2)) {
 			return true;
 		}
 
@@ -239,8 +243,8 @@ public class MinimapOverlay extends TilesOverlay {
 	@Override
 	public boolean onLongPress(final MotionEvent pEvent, final MapView pMapView) {
 		// Consume event so layers underneath don't receive
-		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldSize_2,
-				(int) pEvent.getY() + mViewportRect.top - mWorldSize_2)) {
+		if (mMiniMapCanvasRect.contains((int) pEvent.getX() + mViewportRect.left - mWorldWidthSize_2,
+				(int) pEvent.getY() + mViewportRect.top - mWorldHeigthSize_2)) {
 			return true;
 		}
 

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.ResourceProxy.string;
+import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.ExpirableBitmapDrawable;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.constants.OpenStreetMapTileProviderConstants;
@@ -33,11 +34,13 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 	protected final Random random = new Random();
 
 	private final int mTileSizePixels;
+	private final TileSystem mTileSystem;
 
 	private final string mResourceId;
 
 	public BitmapTileSourceBase(final String aName, final string aResourceId,
 			final int aZoomMinLevel, final int aZoomMaxLevel, final int aTileSizePixels,
+			final TileSystem aTileSystem,
 			final String aImageFilenameEnding) {
 		mResourceId = aResourceId;
 		mOrdinal = globalOrdinal++;
@@ -45,6 +48,8 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 		mMinimumZoomLevel = aZoomMinLevel;
 		mMaximumZoomLevel = aZoomMaxLevel;
 		mTileSizePixels = aTileSizePixels;
+		mTileSystem = aTileSystem;
+		mTileSystem.setTileSize(aTileSizePixels);
 		mImageFilenameEnding = aImageFilenameEnding;
 	}
 
@@ -80,7 +85,12 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 	public int getTileSizePixels() {
 		return mTileSizePixels;
 	}
-
+	
+	@Override
+	public TileSystem getTileSystem(){
+		return mTileSystem;
+	}
+	
 	@Override
 	public String localizedName(final ResourceProxy proxy) {
 		return proxy.getString(mResourceId);

@@ -91,6 +91,18 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "Compass";
 		case map_mode:
 			return "Map mode";
+		case arcgis_world_street_map:
+			return "arcgis world street map";
+		case arcgis_world_magery:
+			return "arcgis world magery";
+		case google:
+			return "google";
+		case baidu:
+			return "baidu";
+		case tianditu_vec:
+			return "tianditu_vec";
+		case tianditu_cva:
+			return "tianditu_cva";
 		default:
 			throw new IllegalArgumentException();
 		}

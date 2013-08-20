@@ -230,14 +230,16 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 		logger.info("rescale tile cache from "+ pOldZoomLevel + " to " + pNewZoomLevel);
 
 		final int tileSize = getTileSource().getTileSizePixels();
-		final int worldSize_2 = TileSystem.MapSize(pNewZoomLevel) >> 1;
+		TileSystem tileSystem = getTileSource().getTileSystem();
+		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(pNewZoomLevel) >> 1;
+		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(pNewZoomLevel) >> 1;
 		final Rect viewPort = new Rect(pViewPort);
-		viewPort.offset(worldSize_2, worldSize_2);
+		viewPort.offset(worldWidthSize_2, worldHeigthSize_2);
 
 		final ScaleTileLooper tileLooper = pNewZoomLevel > pOldZoomLevel
 				? new ZoomInTileLooper(pOldZoomLevel)
 				: new ZoomOutTileLooper(pOldZoomLevel);
-		tileLooper.loop(null, pNewZoomLevel, tileSize, viewPort);
+		tileLooper.loop(null, pNewZoomLevel, tileSize, viewPort,tileSystem);
 
 		final long endMs = System.currentTimeMillis();
 		logger.info("Finished rescale in " + (endMs - startMs) + "ms");

@@ -56,7 +56,8 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 
 	private boolean mOptionsMenuEnabled = true;
 
-	private int mWorldSize_2;
+	private int mWorldWidthSize_2;
+	private int mWorldHeigthSize_2;
 
 	/** A drawable loading tile **/
 	private BitmapDrawable mLoadingTile = null;
@@ -124,16 +125,18 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 		// Calculate the half-world size
 		final Projection pj = osmv.getProjection();
 		final int zoomLevel = pj.getZoomLevel();
-		mWorldSize_2 = TileSystem.MapSize(zoomLevel) >> 1;
+		TileSystem tileSystem = osmv.getTileProvider().getTileSource().getTileSystem();
+		mWorldWidthSize_2 = tileSystem.MapWidthPixelSize(zoomLevel) >> 1;
+		mWorldHeigthSize_2 = tileSystem.MapHeigthPixelSize(zoomLevel) >> 1;
 
 		// Get the area we are drawing to
 		mViewPort.set(pj.getScreenRect());
 
 		// Translate the Canvas coordinates into Mercator coordinates
-		mViewPort.offset(mWorldSize_2, mWorldSize_2);
+		mViewPort.offset(mWorldWidthSize_2, mWorldHeigthSize_2);
 
 		// Draw the tiles!
-		drawTiles(c.getSafeCanvas(), pj.getZoomLevel(), TileSystem.getTileSize(), mViewPort);
+		drawTiles(c.getSafeCanvas(), pj.getZoomLevel(), tileSystem.getTileSize(), mViewPort);
 	}
 
 	/**
@@ -145,13 +148,14 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 	public void drawTiles(final Canvas c, final int zoomLevel, final int tileSizePx,
 			final Rect viewPort) {
 
-		mTileLooper.loop(c, zoomLevel, tileSizePx, viewPort);
+		TileSystem tileSystem = mTileProvider.getTileSource().getTileSystem();
+		mTileLooper.loop(c, zoomLevel, tileSizePx, viewPort,tileSystem);
 
 		// draw a cross at center in debug mode
 		if (DEBUGMODE) {
 			// final GeoPoint center = osmv.getMapCenter();
-			final Point centerPoint = new Point(viewPort.centerX() - mWorldSize_2,
-					viewPort.centerY() - mWorldSize_2);
+			final Point centerPoint = new Point(viewPort.centerX() - mWorldWidthSize_2,
+					viewPort.centerY() - mWorldHeigthSize_2);
 			c.drawLine(centerPoint.x, centerPoint.y - 9, centerPoint.x, centerPoint.y + 9, mDebugPaint);
 			c.drawLine(centerPoint.x - 9, centerPoint.y, centerPoint.x + 9, centerPoint.y, mDebugPaint);
 		}
@@ -181,7 +185,7 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 			if (DEBUGMODE) {
 				mTileRect.set(pX * pTileSizePx, pY * pTileSizePx, pX * pTileSizePx + pTileSizePx, pY
 						* pTileSizePx + pTileSizePx);
-				mTileRect.offset(-mWorldSize_2, -mWorldSize_2);
+				mTileRect.offset(-mWorldWidthSize_2, -mWorldHeigthSize_2);
 				pCanvas.drawText(pTile.toString(), mTileRect.left + 1,
 						mTileRect.top + mDebugPaint.getTextSize(), mDebugPaint);
 				pCanvas.drawLine(mTileRect.left, mTileRect.top, mTileRect.right, mTileRect.top,
@@ -197,7 +201,7 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 
 	protected void onTileReadyToDraw(final Canvas c, final Drawable currentMapTile,
 			final Rect tileRect) {
-		tileRect.offset(-mWorldSize_2, -mWorldSize_2);
+		tileRect.offset(-mWorldWidthSize_2, -mWorldHeigthSize_2);
 		currentMapTile.setBounds(tileRect);
 		currentMapTile.draw(c);
 	}
