@@ -21,7 +21,7 @@ public class BaiduTileSource extends OnlineTileSourceBase {
 		
 		int zoom = aTile.getZoomLevel();
 
-		 int offsetX = (int)Math.pow(2, zoom);
+		 int offsetX = (int)Math.pow(2, zoom-1);
 
 		 int offsetY = offsetX - 1;
 
