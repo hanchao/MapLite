@@ -140,10 +140,26 @@ public class TileSourceFactory {
 			ResourceProxy.string.baidu, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://shangetu0.map.bdimg.com/it/");
 	
 	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
-			ResourceProxy.string.tianditu_vec, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec", "http://t6.tianditu.cn/vec_c/wmts");
+			ResourceProxy.string.tianditu_vec, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec", 
+			"http://t0.tianditu.cn/vec_c/wmts",
+			"http://t1.tianditu.cn/vec_c/wmts",
+			"http://t2.tianditu.cn/vec_c/wmts",
+			"http://t3.tianditu.cn/vec_c/wmts",
+			"http://t4.tianditu.cn/vec_c/wmts",
+			"http://t5.tianditu.cn/vec_c/wmts",
+			"http://t6.tianditu.cn/vec_c/wmts",
+			"http://t7.tianditu.cn/vec_c/wmts");
 	
 	public static final OnlineTileSourceBase TIANDITU_CVA = new TiandituTileSource("tianditu_cva",
-			ResourceProxy.string.tianditu_cva, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva","http://t1.tianditu.cn/cva_c/wmts");
+			ResourceProxy.string.tianditu_cva, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva",
+			"http://t0.tianditu.cn/cva_c/wmts",
+			"http://t1.tianditu.cn/cva_c/wmts",
+			"http://t2.tianditu.cn/cva_c/wmts",
+			"http://t3.tianditu.cn/cva_c/wmts",
+			"http://t4.tianditu.cn/cva_c/wmts",
+			"http://t5.tianditu.cn/cva_c/wmts",
+			"http://t6.tianditu.cn/cva_c/wmts",
+			"http://t7.tianditu.cn/cva_c/wmts");
 	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
