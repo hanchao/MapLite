@@ -6,6 +6,7 @@ Android Tile Map, fork from [osmdroid](http://code.google.com/p/osmdroid/)
 
 Major differences from osmdroid
 -------------
+* Rename the package name
 * Supports EPSG:4326 TileSystem
 * Supports Google, ArcGIS Online and Tianditu Tile Source
 
