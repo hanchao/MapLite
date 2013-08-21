@@ -5,7 +5,7 @@ package com.mutu.mapapi.views;
 
 import com.mutu.mapapi.api.IGeoPoint;
 import com.mutu.mapapi.api.IMapController;
-import com.mutu.mapapi.mappoint.TileSystem;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.BoundingBoxE6;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.views.util.MyMath;

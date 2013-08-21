@@ -2,10 +2,10 @@ package com.mutu.mapapi.views.overlay;
 
 
 
-import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.MapTileProviderBase;
 import com.mutu.mapapi.tileprovider.MapTileProviderBasic;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;
 import com.mutu.mapapi.views.safecanvas.ISafeCanvas;

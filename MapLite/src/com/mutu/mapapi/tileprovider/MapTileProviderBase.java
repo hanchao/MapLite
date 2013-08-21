@@ -7,10 +7,10 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import com.mutu.mapapi.tileprovider.modules.MapTileModuleProviderBase;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.TileLooper;
 
 import android.graphics.Bitmap;

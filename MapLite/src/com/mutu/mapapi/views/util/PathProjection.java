@@ -4,8 +4,8 @@ import java.util.List;
 
 
 
-import com.mutu.mapapi.mappoint.TileSystem;
-import com.mutu.mapapi.mappoint.TileSystemFactory;
+import com.mutu.mapapi.tilesystem.TileSystem;
+import com.mutu.mapapi.tilesystem.TileSystemFactory;
 import com.mutu.mapapi.util.BoundingBoxE6;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.views.MapView.Projection;

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.api.IMapView;
-import com.mutu.mapapi.mappoint.TileSystem;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.views.MapController;
 import com.mutu.mapapi.views.MapView;

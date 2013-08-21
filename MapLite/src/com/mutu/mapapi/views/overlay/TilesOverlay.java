@@ -6,11 +6,11 @@ import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.ResourceProxy;
-import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.MapTileProviderBase;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
 import com.mutu.mapapi.tileprovider.tilesource.TileSourceFactory;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.TileLooper;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;

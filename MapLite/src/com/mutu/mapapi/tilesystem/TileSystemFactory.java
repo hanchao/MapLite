@@ -1,4 +1,4 @@
-package com.mutu.mapapi.mappoint;
+package com.mutu.mapapi.tilesystem;
 
 import java.util.ArrayList;
 

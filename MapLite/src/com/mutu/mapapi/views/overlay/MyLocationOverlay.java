@@ -13,7 +13,7 @@ import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.SensorEventListenerProxy;
 import com.mutu.mapapi.api.IMapView;
 import com.mutu.mapapi.api.IMyLocationOverlay;
-import com.mutu.mapapi.mappoint.TileSystem;
+import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.util.LocationUtils;
 import com.mutu.mapapi.util.NetworkLocationIgnorer;

@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.ResourceProxy.string;
-import com.mutu.mapapi.mappoint.TileSystem;
 import com.mutu.mapapi.tileprovider.ExpirableBitmapDrawable;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.constants.OpenStreetMapTileProviderConstants;
+import com.mutu.mapapi.tilesystem.TileSystem;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

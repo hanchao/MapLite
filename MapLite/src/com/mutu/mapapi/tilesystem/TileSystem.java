@@ -1,4 +1,4 @@
-package com.mutu.mapapi.mappoint;
+package com.mutu.mapapi.tilesystem;
 
 import com.mutu.mapapi.util.GeoPoint;
 

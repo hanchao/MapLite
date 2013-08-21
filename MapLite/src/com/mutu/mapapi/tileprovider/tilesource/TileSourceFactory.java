@@ -3,7 +3,7 @@ package com.mutu.mapapi.tileprovider.tilesource;
 import java.util.ArrayList;
 
 import com.mutu.mapapi.ResourceProxy;
-import com.mutu.mapapi.mappoint.TileSystemFactory;
+import com.mutu.mapapi.tilesystem.TileSystemFactory;
 
 public class TileSourceFactory {
 
@@ -134,7 +134,7 @@ public class TileSourceFactory {
 			ResourceProxy.string.arcgis_world_magery, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/");
 	
 	public static final OnlineTileSourceBase GOOGLE = new GoogleTileSource("Google",
-			ResourceProxy.string.google, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			ResourceProxy.string.google, 0, 22, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
 			"http://mt0.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
 			"http://mt1.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
 			"http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
@@ -154,7 +154,7 @@ public class TileSourceFactory {
 			"http://shangetu9.map.bdimg.com/it/");
 	
 	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
-			ResourceProxy.string.tianditu_vec, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec", 
+			ResourceProxy.string.tianditu_vec, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec", 
 			"http://t0.tianditu.cn/vec_c/wmts",
 			"http://t1.tianditu.cn/vec_c/wmts",
 			"http://t2.tianditu.cn/vec_c/wmts",
@@ -165,7 +165,7 @@ public class TileSourceFactory {
 			"http://t7.tianditu.cn/vec_c/wmts");
 	
 	public static final OnlineTileSourceBase TIANDITU_CVA = new TiandituTileSource("tianditu_cva",
-			ResourceProxy.string.tianditu_cva, 0, 20, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva",
+			ResourceProxy.string.tianditu_cva, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva",
 			"http://t0.tianditu.cn/cva_c/wmts",
 			"http://t1.tianditu.cn/cva_c/wmts",
 			"http://t2.tianditu.cn/cva_c/wmts",

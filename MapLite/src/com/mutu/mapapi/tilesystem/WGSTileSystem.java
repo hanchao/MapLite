@@ -1,4 +1,4 @@
-package com.mutu.mapapi.mappoint;
+package com.mutu.mapapi.tilesystem;
 
 /*
  * http://msdn.microsoft.com/en-us/library/bb259689.aspx

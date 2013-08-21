@@ -1,9 +1,9 @@
 package com.mutu.mapapi.util;
 
 
-import com.mutu.mapapi.mappoint.TileSystem;
-import com.mutu.mapapi.mappoint.TileSystemFactory;
 import com.mutu.mapapi.tileprovider.MapTile;
+import com.mutu.mapapi.tilesystem.TileSystem;
+import com.mutu.mapapi.tilesystem.TileSystemFactory;
 
 import android.graphics.Canvas;
 import android.graphics.Point;
