@@ -67,6 +67,8 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 	/** For overshooting the tile cache **/
 	private int mOvershootTileCache = 0;
 
+	private boolean mDrawLoadingEnabled = false;
+	
 	public TilesOverlay(final MapTileProviderBase aTileProvider, final Context aContext) {
 		this(aTileProvider, new DefaultResourceProxyImpl(aContext));
 	}
@@ -172,7 +174,7 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 		@Override
 		public void handleTile(final Canvas pCanvas, final int pTileSizePx, final MapTile pTile, final int pX, final int pY) {
 			Drawable currentMapTile = mTileProvider.getMapTile(pTile);
-			if (currentMapTile == null) {
+			if (mDrawLoadingEnabled && currentMapTile == null) {
 				currentMapTile = getLoadingTile();
 			}
 
@@ -363,5 +365,15 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 	 */
 	public int getOvershootTileCache() {
 		return mOvershootTileCache;
+	}
+	
+	
+	public void setDrawLoadingEnabled(final boolean pDrawLoadingEnabled) {
+		this.mDrawLoadingEnabled = pDrawLoadingEnabled;
+	}
+
+	
+	public boolean isDrawLoadingEnabled() {
+		return this.mDrawLoadingEnabled;
 	}
 }

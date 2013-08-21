@@ -155,6 +155,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		mTileProvider.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
 
 		this.mMapOverlay = new TilesOverlay(mTileProvider, mResourceProxy);
+		this.mMapOverlay.setDrawLoadingEnabled(true);
 		mOverlayManager = new OverlayManager(mMapOverlay);
 
 		this.mZoomController = new ZoomButtonsController(this);
