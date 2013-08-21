@@ -175,6 +175,13 @@ public class TileSourceFactory {
 			"http://t6.tianditu.cn/cva_c/wmts",
 			"http://t7.tianditu.cn/cva_c/wmts");
 	
+	public static final OnlineTileSourceBase YUNNAN_BASICMAP = new ArcGISOnlineTileSource("yunnan_basicmap",
+			ResourceProxy.string.yunnan_basicmap, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/basicmap/MapServer/tile/");
+	
+	public static final OnlineTileSourceBase YUNNAN_BASICLABEL = new ArcGISOnlineTileSource("yunnan_basiclabel",
+			ResourceProxy.string.yunnan_basiclabel, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/basiclabel/MapServer/tile/");
+	
+	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
 		mTileSources = new ArrayList<ITileSource>();
@@ -194,5 +201,7 @@ public class TileSourceFactory {
 		mTileSources.add(BAIDU);
 		mTileSources.add(TIANDITU_VEC);
 		mTileSources.add(TIANDITU_CVA);
+		mTileSources.add(YUNNAN_BASICMAP);
+		mTileSources.add(YUNNAN_BASICLABEL);
 	}
 }

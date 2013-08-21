@@ -103,6 +103,10 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "tianditu_vec";
 		case tianditu_cva:
 			return "tianditu_cva";
+		case yunnan_basicmap:
+			return "yunnan_basicmap";
+		case yunnan_basiclabel:
+			return "yunnan_basiclabel";
 		default:
 			throw new IllegalArgumentException();
 		}

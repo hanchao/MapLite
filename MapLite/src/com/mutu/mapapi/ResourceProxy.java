@@ -27,6 +27,9 @@ public interface ResourceProxy {
 		
 		//tianditu
 		tianditu_vec,tianditu_cva,
+		
+		//yunnan_tianditu
+		yunnan_basicmap,yunnan_basiclabel
 	}
 
 	public static enum bitmap {
