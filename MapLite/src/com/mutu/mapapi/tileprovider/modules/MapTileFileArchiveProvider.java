@@ -4,6 +4,7 @@ package com.mutu.mapapi.tileprovider.modules;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 
 	private final ArrayList<IArchiveFile> mArchiveFiles = new ArrayList<IArchiveFile>();
 
-	protected ITileSource mTileSource;
+	private final AtomicReference<ITileSource> mTileSource = new AtomicReference<ITileSource>();
 
 	/** Disable the search of archives if specified in constructor */
 	private final boolean mSpecificArchivesProvided;
@@ -57,7 +58,7 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 		super(pRegisterReceiver, NUMBER_OF_TILE_FILESYSTEM_THREADS,
 				TILE_FILESYSTEM_MAXIMUM_QUEUE_SIZE);
 
-		mTileSource = pTileSource;
+		setTileSource(pTileSource);
 
 		if (pArchives == null) {
 			mSpecificArchivesProvided = false;
@@ -106,12 +107,14 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 
 	@Override
 	public int getMinimumZoomLevel() {
-		return mTileSource != null ? mTileSource.getMinimumZoomLevel() : MINIMUM_ZOOMLEVEL;
+		ITileSource tileSource = mTileSource.get();
+		return tileSource != null ? tileSource.getMinimumZoomLevel() : MINIMUM_ZOOMLEVEL;
 	}
 
 	@Override
 	public int getMaximumZoomLevel() {
-		return mTileSource != null ? mTileSource.getMaximumZoomLevel() : MAXIMUM_ZOOMLEVEL;
+		ITileSource tileSource = mTileSource.get();
+		return tileSource != null ? tileSource.getMaximumZoomLevel() : MAXIMUM_ZOOMLEVEL;
 	}
 
 	@Override
@@ -130,7 +133,7 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 
 	@Override
 	public void setTileSource(final ITileSource pTileSource) {
-		mTileSource = pTileSource;
+		mTileSource.set(pTileSource);
 	}
 
 	@Override
@@ -165,9 +168,10 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 		}
 	}
 
-	private synchronized InputStream getInputStream(final MapTile pTile) {
+	private synchronized InputStream getInputStream(final MapTile pTile,
+			final ITileSource tileSource) {
 		for (final IArchiveFile archiveFile : mArchiveFiles) {
-			final InputStream in = archiveFile.getInputStream(mTileSource, pTile);
+			final InputStream in = archiveFile.getInputStream(tileSource, pTile);
 			if (in != null) {
 				if (DEBUGMODE) {
 					logger.debug("Found tile " + pTile + " in " + archiveFile);
@@ -188,7 +192,8 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 		@Override
 		public Drawable loadTile(final MapTileRequestState pState) {
 
-			if (mTileSource == null) {
+			ITileSource tileSource = mTileSource.get();
+			if (tileSource == null) {
 				return null;
 			}
 
@@ -208,12 +213,12 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 					logger.debug("Tile doesn't exist: " + pTile);
 				}
 
-				inputStream = getInputStream(pTile);
+				inputStream = getInputStream(pTile,tileSource);
 				if (inputStream != null) {
 					if (DEBUGMODE) {
 						logger.debug("Use tile from archive: " + pTile);
 					}
-					final Drawable drawable = mTileSource.getDrawable(inputStream);
+					final Drawable drawable = tileSource.getDrawable(inputStream);
 					return drawable;
 				}
 			} catch (final Throwable e) {
