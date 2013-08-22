@@ -1,10 +1,14 @@
 package com.mutu.mapapi.views.overlay.egis;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.graphics.Point;
 
 import com.android.gis.Layer;
 import com.android.gis.Workspace;
+import com.mutu.mapapi.tileprovider.modules.MapTileDownloader;
 import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;
@@ -15,21 +19,15 @@ import com.mutu.mapapi.views.util.constants.MapViewConstants;
 
 public class EGISOverlay extends SafeDrawOverlay{
 
-	Workspace mWorkspace = new Workspace();
+	private static final Logger logger = LoggerFactory.getLogger(MapTileDownloader.class);
+
+	
 	com.android.gis.MapView mMapView = null;
 	Layer mLayer = null;
-	public EGISOverlay(Context ctx) {
+	public EGISOverlay(Context ctx, com.android.gis.MapView mapView) {
 		super(ctx);
 		// TODO Auto-generated constructor stub
-		boolean opened = mWorkspace.open("/sdcard/jingjin/jingjin.smwu"); 
-		if(opened){
-			String mapname = mWorkspace.getMapNameAt(0);
-			mMapView = new com.android.gis.MapView(ctx);
-			mMapView.AttachWorkspace(mWorkspace);
-			if(mMapView.Open(mapname)){
-				
-			}
-		}
+		mMapView = mapView;
 	}
 
 	@Override
@@ -38,23 +36,15 @@ public class EGISOverlay extends SafeDrawOverlay{
 		if (shadow)
 			return;
 		
-		TileSystem tileSystem = osmv.getTileProvider().getTileSource().getTileSystem();
-		Point mMapCoords = tileSystem.LatLongToPixelXY(0,116,
-				MapViewConstants.MAXIMUM_ZOOMLEVEL,null);
-		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-		mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
-		
-		final Projection pj = osmv.getProjection();
-		final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - pj.getZoomLevel();
-		
-		c.drawCircle(mMapCoords.x >> zoomDiff, mMapCoords.y >> zoomDiff, 5, new SafePaint());
-		
-		
 		if(mMapView == null)
 			return;
 		
+		
+		long iSTime = System.nanoTime();
+		
 		EGISRender.drawMapView(mMapView, c, osmv);
+		long iETime = System.nanoTime();
+		logger.debug("EGISOverlay draw time :" + (iETime - iSTime)/1000000000);
 	}
 
 }
