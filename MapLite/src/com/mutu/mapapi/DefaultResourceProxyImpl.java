@@ -97,6 +97,8 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "arcgis world magery";
 		case google:
 			return "google";
+		case amap:
+			return "AMap";
 		case baidu:
 			return "baidu";
 		case tianditu_vec:

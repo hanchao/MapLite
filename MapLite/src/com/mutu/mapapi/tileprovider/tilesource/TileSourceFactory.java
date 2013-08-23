@@ -139,6 +139,13 @@ public class TileSourceFactory {
 			"http://mt1.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
 			"http://mt2.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
 			"http://mt3.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&");
+	
+	public static final OnlineTileSourceBase AMAP = new AMapTileSource("AMap",
+			ResourceProxy.string.amap, 1, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			"http://webrd01.is.autonavi.com/appmaptile",
+			"http://webrd01.is.autonavi.com/appmaptile",
+			"http://webrd01.is.autonavi.com/appmaptile",
+			"http://webrd01.is.autonavi.com/appmaptile");
 		
 	public static final OnlineTileSourceBase BAIDU = new BaiduTileSource("Baidu",
 			ResourceProxy.string.baidu, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
@@ -198,6 +205,7 @@ public class TileSourceFactory {
 		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
 		mTileSources.add(GOOGLE);
+		mTileSources.add(AMAP);
 		mTileSources.add(BAIDU);
 		mTileSources.add(TIANDITU_VEC);
 		mTileSources.add(TIANDITU_CVA);

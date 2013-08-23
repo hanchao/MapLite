@@ -22,6 +22,9 @@ public interface ResourceProxy {
 		//google
 		google,
 		
+		//AMAP
+		amap,
+		
 		//baidu
 		baidu,
 		
