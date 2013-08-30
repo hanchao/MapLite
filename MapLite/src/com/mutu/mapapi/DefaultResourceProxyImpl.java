@@ -113,6 +113,12 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "yunnan_basicmap";
 		case yunnan_basiclabel:
 			return "yunnan_basiclabel";
+		case yunnan_ynyxmap:
+			return "yunnan_ynyxmap";
+		case yunnan_imagevector:
+			return "yunnan_imagevector";
+		case yunnan_imagelabel:
+			return "yunnan_imagelabel";
 		default:
 			throw new IllegalArgumentException();
 		}

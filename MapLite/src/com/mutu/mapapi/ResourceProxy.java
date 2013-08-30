@@ -32,7 +32,7 @@ public interface ResourceProxy {
 		tianditu_vec,tianditu_cva,tianditu_img,tianditu_cia,
 		
 		//yunnan_tianditu
-		yunnan_basicmap,yunnan_basiclabel
+		yunnan_basicmap,yunnan_basiclabel,yunnan_ynyxmap,yunnan_imagevector,yunnan_imagelabel,
 	}
 
 	public static enum bitmap {

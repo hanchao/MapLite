@@ -210,6 +210,14 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase YUNNAN_BASICLABEL = new ArcGISOnlineTileSource("yunnan_basiclabel",
 			ResourceProxy.string.yunnan_basiclabel, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/basiclabel/MapServer/tile/");
 	
+	public static final OnlineTileSourceBase YUNNAN_YNYXMAP = new ArcGISOnlineTileSource("yunnan_ynyxmap",
+			ResourceProxy.string.yunnan_ynyxmap, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/YNYXmap/MapServer/tile/");
+	
+	public static final OnlineTileSourceBase YUNNAN_IMAGEVECTOR = new ArcGISOnlineTileSource("yunnan_imagevector",
+			ResourceProxy.string.yunnan_imagevector, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/imagevector/MapServer/tile/");
+	
+	public static final OnlineTileSourceBase YUNNAN_IMAGELABEL = new ArcGISOnlineTileSource("yunnan_imagelabel",
+			ResourceProxy.string.yunnan_imagelabel, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/imagelabel/MapServer/tile/");
 	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
@@ -235,5 +243,8 @@ public class TileSourceFactory {
 		mTileSources.add(TIANDITU_CIA);
 		mTileSources.add(YUNNAN_BASICMAP);
 		mTileSources.add(YUNNAN_BASICLABEL);
+		mTileSources.add(YUNNAN_YNYXMAP);
+		mTileSources.add(YUNNAN_IMAGEVECTOR);
+		mTileSources.add(YUNNAN_IMAGELABEL);
 	}
 }
