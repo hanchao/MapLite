@@ -383,6 +383,13 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		}
 
 		mTileProvider.rescaleCache(newZoomLevel, curZoomLevel, getScreenRect(null));
+		for (Overlay ov : this.getOverlayManager()){
+			if (ov instanceof TilesOverlay) {
+				final TilesOverlay tov = (TilesOverlay)ov;
+				MapTileProviderBase tileProviderBase = tov.getTileProvider();
+				tileProviderBase.rescaleCache(newZoomLevel, curZoomLevel, getScreenRect(null));
+			}
+		}
 
 		// do callback on listener
 		if (newZoomLevel != curZoomLevel && mListener != null) {

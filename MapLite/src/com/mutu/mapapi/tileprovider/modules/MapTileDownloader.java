@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.http.HttpClientFactory;
+import com.mutu.mapapi.tileprovider.ExpirableBitmapDrawable;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.MapTileRequestState;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
@@ -26,6 +27,8 @@ import com.mutu.mapapi.tileprovider.tilesource.OnlineTileSourceBase;
 import com.mutu.mapapi.tileprovider.tilesource.BitmapTileSourceBase.LowMemoryException;
 import com.mutu.mapapi.tileprovider.util.StreamUtils;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
@@ -185,21 +188,30 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 
 				// Check to see if we got success
 				final org.apache.http.StatusLine line = response.getStatusLine();
-				if (line.getStatusCode() != 200) {
+				
+				final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
+				out = new BufferedOutputStream(dataStream, StreamUtils.IO_BUFFER_SIZE);
+				
+				if (line.getStatusCode() == 200) {
+					
+					final HttpEntity entity = response.getEntity();
+					if (entity == null) {
+						logger.warn("No content downloading MapTile: " + tile);
+						return null;
+					}
+					in = entity.getContent();
+
+					StreamUtils.copy(in, out);
+					
+				}else if(line.getStatusCode() == 404){
+					Bitmap bitmap = Bitmap.createBitmap(tileSource.getTileSizePixels(), tileSource.getTileSizePixels(), Config.ARGB_8888);
+					bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+					//return new ExpirableBitmapDrawable(bitmap);
+				}else{
 					logger.warn("Problem downloading MapTile: " + tile + " HTTP response: " + line);
 					return null;
 				}
 
-				final HttpEntity entity = response.getEntity();
-				if (entity == null) {
-					logger.warn("No content downloading MapTile: " + tile);
-					return null;
-				}
-				in = entity.getContent();
-
-				final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
-				out = new BufferedOutputStream(dataStream, StreamUtils.IO_BUFFER_SIZE);
-				StreamUtils.copy(in, out);
 				out.flush();
 				final byte[] data = dataStream.toByteArray();
 				final ByteArrayInputStream byteStream = new ByteArrayInputStream(data);

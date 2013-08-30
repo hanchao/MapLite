@@ -54,7 +54,7 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 	private final Rect mTileRect = new Rect();
 	private final Rect mViewPort = new Rect();
 
-	private boolean mOptionsMenuEnabled = true;
+	private boolean mOptionsMenuEnabled = false;
 
 	private int mWorldWidthSize_2;
 	private int mWorldHeigthSize_2;
@@ -82,6 +82,10 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 		this.mTileProvider = aTileProvider;
 	}
 
+	public MapTileProviderBase getTileProvider() {
+		return mTileProvider;
+	}
+	
 	@Override
 	public void onDetach(final MapView pMapView) {
 		this.mTileProvider.detach();
