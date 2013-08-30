@@ -172,7 +172,7 @@ public class TileSourceFactory {
 			"http://t7.tianditu.cn/vec_c/wmts");
 	
 	public static final OnlineTileSourceBase TIANDITU_CVA = new TiandituTileSource("tianditu_cva",
-			ResourceProxy.string.tianditu_cva, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva",
+			ResourceProxy.string.tianditu_cva, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cav",
 			"http://t0.tianditu.cn/cva_c/wmts",
 			"http://t1.tianditu.cn/cva_c/wmts",
 			"http://t2.tianditu.cn/cva_c/wmts",
@@ -181,6 +181,28 @@ public class TileSourceFactory {
 			"http://t5.tianditu.cn/cva_c/wmts",
 			"http://t6.tianditu.cn/cva_c/wmts",
 			"http://t7.tianditu.cn/cva_c/wmts");
+	
+	public static final OnlineTileSourceBase TIANDITU_IMG = new TiandituTileSource("tianditu_img",
+			ResourceProxy.string.tianditu_img, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "img", 
+			"http://t0.tianditu.cn/img_c/wmts",
+			"http://t1.tianditu.cn/img_c/wmts",
+			"http://t2.tianditu.cn/img_c/wmts",
+			"http://t3.tianditu.cn/img_c/wmts",
+			"http://t4.tianditu.cn/img_c/wmts",
+			"http://t5.tianditu.cn/img_c/wmts",
+			"http://t6.tianditu.cn/img_c/wmts",
+			"http://t7.tianditu.cn/img_c/wmts");
+	
+	public static final OnlineTileSourceBase TIANDITU_CIA = new TiandituTileSource("tianditu_cia",
+			ResourceProxy.string.tianditu_cia, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cia", 
+			"http://t0.tianditu.cn/cia_c/wmts",
+			"http://t1.tianditu.cn/cia_c/wmts",
+			"http://t2.tianditu.cn/cia_c/wmts",
+			"http://t3.tianditu.cn/cia_c/wmts",
+			"http://t4.tianditu.cn/cia_c/wmts",
+			"http://t5.tianditu.cn/cia_c/wmts",
+			"http://t6.tianditu.cn/cia_c/wmts",
+			"http://t7.tianditu.cn/cia_c/wmts");
 	
 	public static final OnlineTileSourceBase YUNNAN_BASICMAP = new ArcGISOnlineTileSource("yunnan_basicmap",
 			ResourceProxy.string.yunnan_basicmap, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/basicmap/MapServer/tile/");
@@ -209,6 +231,8 @@ public class TileSourceFactory {
 		mTileSources.add(BAIDU);
 		mTileSources.add(TIANDITU_VEC);
 		mTileSources.add(TIANDITU_CVA);
+		mTileSources.add(TIANDITU_IMG);
+		mTileSources.add(TIANDITU_CIA);
 		mTileSources.add(YUNNAN_BASICMAP);
 		mTileSources.add(YUNNAN_BASICLABEL);
 	}

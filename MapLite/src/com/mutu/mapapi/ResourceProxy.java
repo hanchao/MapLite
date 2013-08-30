@@ -29,7 +29,7 @@ public interface ResourceProxy {
 		baidu,
 		
 		//tianditu
-		tianditu_vec,tianditu_cva,
+		tianditu_vec,tianditu_cva,tianditu_img,tianditu_cia,
 		
 		//yunnan_tianditu
 		yunnan_basicmap,yunnan_basiclabel

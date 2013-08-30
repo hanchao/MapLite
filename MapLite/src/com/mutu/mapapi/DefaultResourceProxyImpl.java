@@ -105,6 +105,10 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "tianditu_vec";
 		case tianditu_cva:
 			return "tianditu_cva";
+		case tianditu_img:
+			return "tianditu_img";
+		case tianditu_cia:
+			return "tianditu_cia";
 		case yunnan_basicmap:
 			return "yunnan_basicmap";
 		case yunnan_basiclabel:
