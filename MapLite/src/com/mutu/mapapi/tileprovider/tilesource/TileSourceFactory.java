@@ -172,7 +172,7 @@ public class TileSourceFactory {
 			"http://t7.tianditu.cn/vec_c/wmts");
 	
 	public static final OnlineTileSourceBase TIANDITU_CVA = new TiandituTileSource("tianditu_cva",
-			ResourceProxy.string.tianditu_cva, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cav",
+			ResourceProxy.string.tianditu_cva, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "cva",
 			"http://t0.tianditu.cn/cva_c/wmts",
 			"http://t1.tianditu.cn/cva_c/wmts",
 			"http://t2.tianditu.cn/cva_c/wmts",
@@ -219,6 +219,30 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase YUNNAN_IMAGELABEL = new ArcGISOnlineTileSource("yunnan_imagelabel",
 			ResourceProxy.string.yunnan_imagelabel, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/imagelabel/MapServer/tile/");
 	
+	public static final CompositeTileSource TIANDITU_VECTOR = new CompositeTileSource("tianditu_vector",
+			ResourceProxy.string.tianditu_vector, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			TIANDITU_VEC,TIANDITU_CVA);
+	
+	public static final CompositeTileSource TIANDITU_IMAGE = new CompositeTileSource("tianditu_image",
+			ResourceProxy.string.tianditu_image, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			TIANDITU_IMG,TIANDITU_CIA );
+	
+	public static final CompositeTileSource YUNNAN_BASIC = new CompositeTileSource("yunnan_basic",
+			ResourceProxy.string.yunnan_basic, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			YUNNAN_BASICMAP,YUNNAN_BASICLABEL);
+	
+	public static final CompositeTileSource YUNNAN_IMAGE = new CompositeTileSource("yunnan_image",
+			ResourceProxy.string.yunnan_image, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			YUNNAN_YNYXMAP,YUNNAN_IMAGEVECTOR,YUNNAN_IMAGELABEL );
+	
+	public static final CompositeTileSource TIANDITU_YUNNAN_VECTOR = new CompositeTileSource("tianditu_yunnan_vector",
+			ResourceProxy.string.tianditu_yunnan_vector, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			TIANDITU_VEC,TIANDITU_CVA,YUNNAN_BASICMAP,YUNNAN_BASICLABEL);
+	
+	public static final CompositeTileSource TIANDITU_YUNNAN_IMAGE = new CompositeTileSource("tianditu_yunnan_image",
+			ResourceProxy.string.tianditu_yunnan_image, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
+			TIANDITU_IMG,TIANDITU_CIA,YUNNAN_YNYXMAP,YUNNAN_IMAGEVECTOR,YUNNAN_IMAGELABEL);
+	
 	private static ArrayList<ITileSource> mTileSources;
 	static {
 		mTileSources = new ArrayList<ITileSource>();
@@ -246,5 +270,11 @@ public class TileSourceFactory {
 		mTileSources.add(YUNNAN_YNYXMAP);
 		mTileSources.add(YUNNAN_IMAGEVECTOR);
 		mTileSources.add(YUNNAN_IMAGELABEL);
+		mTileSources.add(TIANDITU_VECTOR);
+		mTileSources.add(TIANDITU_IMAGE);
+		mTileSources.add(YUNNAN_BASIC);
+		mTileSources.add(YUNNAN_IMAGE);
+		mTileSources.add(TIANDITU_YUNNAN_VECTOR);
+		mTileSources.add(TIANDITU_YUNNAN_IMAGE);
 	}
 }

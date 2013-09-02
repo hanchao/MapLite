@@ -119,6 +119,18 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "yunnan_imagevector";
 		case yunnan_imagelabel:
 			return "yunnan_imagelabel";
+		case tianditu_vector:
+			return "tianditu_vector";
+		case tianditu_image:
+			return "tianditu_image";
+		case yunnan_basic:
+			return "yunnan_basic";
+		case yunnan_image:
+			return "yunnan_image";
+		case tianditu_yunnan_vector:
+			return "tianditu_yunnan_vector";
+		case tianditu_yunnan_image:
+			return "tianditu_yunnan_image";
 		default:
 			throw new IllegalArgumentException();
 		}

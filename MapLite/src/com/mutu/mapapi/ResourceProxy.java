@@ -29,10 +29,13 @@ public interface ResourceProxy {
 		baidu,
 		
 		//tianditu
-		tianditu_vec,tianditu_cva,tianditu_img,tianditu_cia,
+		tianditu_vec,tianditu_cva,tianditu_img,tianditu_cia,tianditu_vector,tianditu_image,
 		
-		//yunnan_tianditu
-		yunnan_basicmap,yunnan_basiclabel,yunnan_ynyxmap,yunnan_imagevector,yunnan_imagelabel,
+		//yunnan
+		yunnan_basicmap,yunnan_basiclabel,yunnan_ynyxmap,yunnan_imagevector,yunnan_imagelabel,yunnan_basic,yunnan_image,
+		
+		//tianditu_yunnan
+		tianditu_yunnan_vector,tianditu_yunnan_image,
 	}
 
 	public static enum bitmap {
