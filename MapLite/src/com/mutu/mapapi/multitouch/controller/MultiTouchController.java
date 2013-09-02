@@ -283,7 +283,7 @@ public class MultiTouchController<T> {
 				decodeTouchEvent(pointerCount, xVals, yVals, pressureVals, pointerIds, //
 						/* action = */processingHist ? MotionEvent.ACTION_MOVE : action, //
 						/* down = */processingHist ? true : action != MotionEvent.ACTION_UP //
-								&& (action & ((1 << ACTION_POINTER_INDEX_SHIFT) - 1)) != ACTION_POINTER_UP //
+//								&& (action & ((1 << ACTION_POINTER_INDEX_SHIFT) - 1)) != ACTION_POINTER_UP //
 								&& action != MotionEvent.ACTION_CANCEL, //
 						processingHist ? event.getHistoricalEventTime(histIdx) : event.getEventTime());
 			}
