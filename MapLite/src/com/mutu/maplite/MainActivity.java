@@ -24,7 +24,6 @@ import com.mutu.mapapi.views.overlay.DirectedLocationOverlay;
 import com.mutu.mapapi.views.overlay.ItemizedIconOverlay;
 import com.mutu.mapapi.views.overlay.MinimapOverlay;
 import com.mutu.mapapi.views.overlay.OverlayItem;
-import com.mutu.mapapi.views.overlay.PoiOverlay;
 import com.mutu.mapapi.views.overlay.ScaleBarOverlay;
 import com.mutu.mapapi.views.overlay.SimpleLocationOverlay;
 import com.mutu.mapapi.views.overlay.TilesOverlay;
