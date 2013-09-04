@@ -22,10 +22,8 @@ public class LocationUtils implements UtilConstants {
 		if (pLocationManager == null) {
 			return null;
 		}
-		final Location gpsLocation =
-			pLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		final Location networkLocation =
-			pLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		final Location gpsLocation = getLastKnownLocation(pLocationManager, LocationManager.GPS_PROVIDER);
+		final Location networkLocation = getLastKnownLocation(pLocationManager, LocationManager.NETWORK_PROVIDER);
 		if (gpsLocation == null) {
 			return networkLocation;
 		} else if (networkLocation == null) {
@@ -40,4 +38,10 @@ public class LocationUtils implements UtilConstants {
 		}
 	}
 
+	private static Location getLastKnownLocation(final LocationManager pLocationManager, final String pProvider) {
+		if (!pLocationManager.isProviderEnabled(pProvider)) {
+			return null;
+		}
+		return pLocationManager.getLastKnownLocation(pProvider);
+	}
 }

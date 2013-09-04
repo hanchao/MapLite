@@ -4,5 +4,7 @@
     <string name="app_name">MapLite</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_compare">CompareActivity</string>
+    <string name="title_activity_map">MapActivity</string>
 
 </resources>

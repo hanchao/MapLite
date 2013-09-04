@@ -12,8 +12,11 @@ import com.mutu.mapapi.views.MapController;
 public interface IMapController {
 
 	void animateTo(IGeoPoint geoPoint);
+	void scrollBy(int x, int y);
 	void setCenter(IGeoPoint point);
 	int setZoom(int zoomLevel);
+	void stopAnimation(boolean jumpToFinish);
+	void stopPanning();
 	boolean zoomIn();
 	boolean zoomInFixing(int xPixel, int yPixel);
 	boolean zoomOut();

@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.ResourceProxy;
+import com.mutu.mapapi.api.IMapController;
 import com.mutu.mapapi.api.IMapView;
 import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.GeoPoint;
-import com.mutu.mapapi.views.MapController;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;
 import com.mutu.mapapi.views.overlay.IOverlayMenuProvider;
@@ -60,13 +60,14 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 
 	protected final MapView mMapView;
 
-	private final MapController mMapController;
+	private final IMapController mMapController;
 	public IMyLocationProvider mMyLocationProvider;
 
 	private final LinkedList<Runnable> mRunOnFirstFix = new LinkedList<Runnable>();
 	private final Point mMapCoords = new Point();
 
 	private Location mLocation;
+	private final GeoPoint mGeoPoint = new GeoPoint(0, 0); // for reuse
 	private boolean mIsLocationEnabled = false;
 	protected boolean mIsFollowing = false; // follow location updates
 	protected boolean mDrawAccuracyEnabled = true;
@@ -440,7 +441,9 @@ public class MyLocationNewOverlay extends SafeDrawOverlay implements IMyLocation
 			mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
 
 			if (mIsFollowing) {
-				mMapController.animateTo(mLocation.getLatitude(), mLocation.getLongitude());
+				mGeoPoint.setLatitudeE6((int) (mLocation.getLatitude() * 1E6));
+				mGeoPoint.setLongitudeE6((int) (mLocation.getLongitude() * 1E6));
+				mMapController.animateTo(mGeoPoint);
 			} else {
 				// Get new drawing bounds
 				this.getMyLocationDrawingBounds(mMapView.getZoomLevel(), mLocation, mMyLocationRect);

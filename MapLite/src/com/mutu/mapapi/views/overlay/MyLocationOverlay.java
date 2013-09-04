@@ -11,13 +11,13 @@ import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.LocationListenerProxy;
 import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.SensorEventListenerProxy;
+import com.mutu.mapapi.api.IMapController;
 import com.mutu.mapapi.api.IMapView;
 import com.mutu.mapapi.api.IMyLocationOverlay;
 import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.util.LocationUtils;
 import com.mutu.mapapi.util.NetworkLocationIgnorer;
-import com.mutu.mapapi.views.MapController;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;
 import com.mutu.mapapi.views.overlay.Overlay.Snappable;
@@ -78,7 +78,7 @@ public class MyLocationOverlay extends Overlay implements IMyLocationOverlay, IO
 
 	protected final MapView mMapView;
 
-	private final MapController mMapController;
+	private final IMapController mMapController;
 	private final LocationManager mLocationManager;
 	private final SensorManager mSensorManager;
 	private final Display mDisplay;
@@ -90,6 +90,7 @@ public class MyLocationOverlay extends Overlay implements IMyLocationOverlay, IO
 	private final Point mMapCoords = new Point();
 
 	private Location mLocation;
+	private final GeoPoint mGeoPoint = new GeoPoint(0, 0); // for reuse
 	private long mLocationUpdateMinTime = 0;
 	private float mLocationUpdateMinDistance = 0.0f;
 	protected boolean mFollow = false; // follow location updates
@@ -412,7 +413,9 @@ public class MyLocationOverlay extends Overlay implements IMyLocationOverlay, IO
 		mMapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
 		
 		if (mFollow) {
-			mMapController.animateTo(location.getLatitude(), location.getLongitude());
+			mGeoPoint.setLatitudeE6((int) (mLocation.getLatitude() * 1E6));
+			mGeoPoint.setLongitudeE6((int) (mLocation.getLongitude() * 1E6));
+			mMapController.animateTo(mGeoPoint);
 		} else {
 			if (mLocation != null) {
 				// Get new drawing bounds
