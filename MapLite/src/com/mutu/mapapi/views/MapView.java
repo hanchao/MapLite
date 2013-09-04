@@ -43,6 +43,7 @@ import com.mutu.mapapi.views.util.constants.MapViewConstants;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -1027,7 +1028,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 				.getScreenRect().exactCenterY());
 
 		/* Draw background */
-		// c.drawColor(mBackgroundColor);
+		 c.drawColor(Color.WHITE);
 
 		/* Draw all Overlays. */
 		this.getOverlayManager().onDraw(c, this);
