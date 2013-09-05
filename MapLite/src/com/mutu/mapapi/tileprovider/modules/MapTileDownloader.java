@@ -335,7 +335,7 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 						
 						final Drawable result = tileSource.getDrawable(byteStream);
 						//return result;
-						result.setBounds(0, 0, 256, 256);
+						result.setBounds(0, 0, tileSource.getTileSizePixels(), tileSource.getTileSizePixels());
 						result.draw(canvas);
 						
 						StreamUtils.closeStream(in);
