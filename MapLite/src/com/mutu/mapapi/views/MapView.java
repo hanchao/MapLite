@@ -839,7 +839,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	@Override
 	public boolean dispatchTouchEvent(final MotionEvent event) {
 
-		if (true) {
+		if (DEBUGMODE) {
 			logger.debug("dispatchTouchEvent(" + event + ")");
 		}
 
@@ -863,14 +863,14 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			}
 
 			if (mMultiTouchController != null && mMultiTouchController.onTouchEvent(event)) {
-				if (true) {
+				if (DEBUGMODE) {
 					logger.debug("mMultiTouchController handled onTouchEvent");
 				}
 				return true;
 			}
 
 			if (mGestureDetector.onTouchEvent(rotatedEvent)) {
-				if (true) {
+				if (DEBUGMODE) {
 					logger.debug("mGestureDetector handled onTouchEvent");
 				}
 				return true;
