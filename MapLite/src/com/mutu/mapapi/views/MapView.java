@@ -1028,7 +1028,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 				.getScreenRect().exactCenterY());
 
 		/* Draw background */
-		 c.drawColor(Color.WHITE);
+		c.drawColor(Color.argb(255, 244, 244, 239));
 
 		/* Draw all Overlays. */
 		this.getOverlayManager().onDraw(c, this);
