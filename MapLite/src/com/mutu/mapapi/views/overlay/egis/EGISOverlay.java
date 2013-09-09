@@ -99,7 +99,11 @@ public class EGISOverlay extends SafeDrawOverlay{
 	void renderMapAsync(MapView osmv){
 		mWidth = osmv.getWidth();
 		mHeight = osmv.getHeight();
-		mDrawBitmap = Bitmap.createBitmap(mWidth, mHeight,Config.ARGB_8888 );
+		if(mDrawBitmap == null || mWidth != mDrawBitmap.getWidth() || mHeight != mDrawBitmap.getHeight()){
+			mDrawBitmap = Bitmap.createBitmap(mWidth, mHeight,Config.ARGB_8888 );
+		}else{
+			mDrawBitmap.eraseColor(Color.argb(0,0,0,0));
+		}
 		
 		mEGISRender.init(osmv);
 		mEGISRender.setStop(false);

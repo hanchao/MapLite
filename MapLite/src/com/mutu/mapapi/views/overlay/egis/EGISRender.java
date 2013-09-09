@@ -84,7 +84,7 @@ public class EGISRender {
 	public void drawMapView(com.android.gis.MapView mapview,Canvas c){
 		
 		//backColor
-		//canvas.drawColor(Color.WHITE);
+		c.drawColor(Color.TRANSPARENT);
 		
 		int layerCount = mapview.GetLayerCount();
 		for(int layerIndex = layerCount-1;layerIndex>=0; layerIndex--){
