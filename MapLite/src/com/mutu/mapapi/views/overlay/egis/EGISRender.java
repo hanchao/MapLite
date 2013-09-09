@@ -14,6 +14,8 @@ import com.android.gis.Rect2D;
 import com.android.gis.Style;
 
 
+import com.mutu.mapapi.tileprovider.MapTile;
+import com.mutu.mapapi.tileprovider.util.SimpleInvalidationHandler;
 import com.mutu.mapapi.tilesystem.TileSystem;
 import com.mutu.mapapi.util.BoundingBoxE6;
 import com.mutu.mapapi.views.MapView;
@@ -28,11 +30,58 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.os.Handler;
 
 public class EGISRender {
 	
+	TileSystem mTileSystem;
+	int mZoomlevel = 0;
+	Rect mScreenRect = new Rect();
+	Rect2D mViewBounds = new Rect2D();
 	
-	public static void drawMapView(com.android.gis.MapView mapview,ISafeCanvas c, MapView osmv){
+	Handler mInvalidationHandler = null;
+	
+	boolean mIsStop = false;
+	
+	
+	public void init(MapView osmv){
+		mZoomlevel = osmv.getProjection().getZoomLevel();
+		mTileSystem = osmv.getTileProvider().getTileSource().getTileSystem();
+		osmv.getScreenRect(mScreenRect);
+		final int worldWidthSize_2 = mTileSystem.MapWidthPixelSize(mZoomlevel) / 2;
+		final int worldHeigthSize_2 = mTileSystem.MapHeigthPixelSize(mZoomlevel) / 2;
+		
+		mScreenRect.offset(worldWidthSize_2, worldHeigthSize_2);
+				
+		BoundingBoxE6 boundingBox = osmv.getBoundingBox();
+		mViewBounds.left = boundingBox.getLonWestE6()/1E6;
+		mViewBounds.top = boundingBox.getLatNorthE6()/1E6;
+		mViewBounds.right = boundingBox.getLonEastE6()/1E6;
+		mViewBounds.bottom = boundingBox.getLatSouthE6()/1E6;
+		
+		mInvalidationHandler = new SimpleInvalidationHandler(osmv);
+	}
+	
+	public boolean isExpired(MapView osmv){
+		if(mZoomlevel != osmv.getProjection().getZoomLevel()){
+			return true;
+		}
+		
+		Rect screenRect = new Rect();
+		osmv.getScreenRect(screenRect);
+		final int worldWidthSize_2 = mTileSystem.MapWidthPixelSize(mZoomlevel) / 2;
+		final int worldHeigthSize_2 = mTileSystem.MapHeigthPixelSize(mZoomlevel) / 2;
+		
+		screenRect.offset(worldWidthSize_2, worldHeigthSize_2);
+		
+		if(!mScreenRect.equals(screenRect)){
+			return true;
+		}
+		return false;
+	}
+	
+	public void drawMapView(com.android.gis.MapView mapview,Canvas c){
 		
 		//backColor
 		//canvas.drawColor(Color.WHITE);
@@ -43,12 +92,16 @@ public class EGISRender {
 			if(layer == null){
 				continue;
 			}
-			drawLayer(layer,c,osmv);
+			drawLayer(layer,c);
+			if(isStop()){
+				break;
+			}
 		}
+		setStop(false);
 	}
 	
 	
-	public static void drawLayer(Layer layer,ISafeCanvas c, MapView osmv){
+	public void drawLayer(Layer layer,Canvas c){
 		if(!layer.IsVisible()){
 			return;
 		}
@@ -64,29 +117,29 @@ public class EGISRender {
 		SafePaint paint = new SafePaint();
 		paint.setColor(style.lineColor);
 		
-		drawDataset(dataset,c,osmv,paint);
+		drawDataset(dataset,c,paint);
 	}
 	
-	public static void drawDataset(Dataset dataset,ISafeCanvas c, MapView osmv,SafePaint paint){
+	public void drawDataset(Dataset dataset,Canvas c,Paint paint){
 		if(dataset.IsRaster()){
-			drawDatasetRaster((DatasetRaster)dataset,c,osmv);
+			drawDatasetRaster((DatasetRaster)dataset,c);
 		}else{
-			drawDatasetVector((DatasetVector)dataset,c,osmv,paint);
+			drawDatasetVector((DatasetVector)dataset,c,paint);
 		}
 	}
 	
-	public static void drawDatasetRaster(DatasetRaster datasetRaster,ISafeCanvas c, MapView osmv){
+	public void drawDatasetRaster(DatasetRaster datasetRaster,Canvas c){
 		
 	}
 	
-	public static void drawDatasetVector(DatasetVector datasetVector,ISafeCanvas c, MapView osmv,SafePaint paint){
-		BoundingBoxE6 boundingBox = osmv.getBoundingBox();
-		Rect2D viewBounds = new Rect2D();
-		viewBounds.left = boundingBox.getLonWestE6()/1E6;
-		viewBounds.top = boundingBox.getLatNorthE6()/1E6;
-		viewBounds.right = boundingBox.getLonEastE6()/1E6;
-		viewBounds.bottom = boundingBox.getLatSouthE6()/1E6;
-		Recordset recordset = datasetVector.QueryByBounds(viewBounds);
+	public void drawDatasetVector(DatasetVector datasetVector,Canvas c,Paint paint){
+//		BoundingBoxE6 boundingBox = osmv.getBoundingBox();
+//		Rect2D viewBounds = new Rect2D();
+//		viewBounds.left = boundingBox.getLonWestE6()/1E6;
+//		viewBounds.top = boundingBox.getLatNorthE6()/1E6;
+//		viewBounds.right = boundingBox.getLonEastE6()/1E6;
+//		viewBounds.bottom = boundingBox.getLatSouthE6()/1E6;
+		Recordset recordset = datasetVector.QueryByBounds(mViewBounds);
 		if(recordset == null){
 			return;
 		}
@@ -97,29 +150,33 @@ public class EGISRender {
 				recordset.MoveNext();
 				continue;
 			}
-			drawGeometry(geometry,c,osmv,paint);
+			drawGeometry(geometry,c,paint);
 			geometry.Delete();
 			recordset.MoveNext();
+			if(isStop()){
+				break;
+			}
 		}
+		invalidate();
 	}
 	
-	public static void drawGeometry(Geometry geometry,ISafeCanvas c, MapView osmv,SafePaint paint){
+	public void drawGeometry(Geometry geometry,Canvas c,Paint paint){
 		int GeometryType = geometry.GetType();
 		switch (GeometryType)
 		{
 			case Geometry.GEOPOINT:
 				{
-					drawGeoPoint((GeoPoint)geometry,c,osmv,paint);
+					drawGeoPoint((GeoPoint)geometry,c,paint);
 				}
 				break;
 			case Geometry.GEOLINE:
 				{
-					drawGeoLine((GeoLine)geometry,c,osmv,paint);
+					drawGeoLine((GeoLine)geometry,c,paint);
 				}
 				break;
 			case Geometry.GEOREGION:
 				{
-					drawGeoRegion((GeoRegion)geometry,c,osmv,paint);
+					drawGeoRegion((GeoRegion)geometry,c,paint);
 				}
 				break;
 			default:
@@ -127,22 +184,22 @@ public class EGISRender {
 		}
 	}
 	
-	public static void drawGeoPoint(GeoPoint geoPoint,ISafeCanvas c, MapView osmv,SafePaint paint){
+	public void drawGeoPoint(GeoPoint geoPoint,Canvas c,Paint paint){
 		Point2D pntMap = geoPoint.GetPoint();
 		
-		Point pntDevice = MapToDevicePoint(pntMap,osmv);
+		Point pntDevice = MapToDevicePoint(pntMap);
 		
 		c.drawCircle(pntDevice.x,pntDevice.y, 5, paint);
 	}
 	
-	public static void drawGeoLine(GeoLine geoLine,ISafeCanvas c, MapView osmv,SafePaint paint){
+	public void drawGeoLine(GeoLine geoLine,Canvas c,Paint paint){
 		Point2D[] pntMaps = geoLine.GetPoints(0);
 		
 		SafeTranslatedPath path = new SafeTranslatedPath();
-		path.onDrawCycleStart(c);
+		//path.onDrawCycleStart(c);
 		int pointCount = pntMaps.length;
 		for(int pointIndex = 0;pointIndex<pointCount; pointIndex++){
-			Point pntDevice = MapToDevicePoint(pntMaps[pointIndex],osmv);
+			Point pntDevice = MapToDevicePoint(pntMaps[pointIndex]);
 			if(pointIndex == 0){
 				path.moveTo(pntDevice.x, pntDevice.y);
 			}else{
@@ -154,15 +211,15 @@ public class EGISRender {
 		c.drawPath(path,paint);
 	}
 	
-	public static void drawGeoRegion(GeoRegion geoRegion,ISafeCanvas c, MapView osmv,SafePaint paint){
+	public void drawGeoRegion(GeoRegion geoRegion,Canvas c,Paint paint){
 	
 		Point2D[] pntMaps = geoRegion.GetPoints(0);
 		
 		SafeTranslatedPath path = new SafeTranslatedPath();
-		path.onDrawCycleStart(c);
+		//path.onDrawCycleStart(c);
 		int pointCount = pntMaps.length;
 		for(int pointIndex = 0;pointIndex<pointCount; pointIndex++){
-			Point pntDevice = MapToDevicePoint(pntMaps[pointIndex],osmv);
+			Point pntDevice = MapToDevicePoint(pntMaps[pointIndex]);
 			if(pointIndex == 0){
 				path.moveTo(pntDevice.x, pntDevice.y);
 			}else{
@@ -175,17 +232,50 @@ public class EGISRender {
 		
 	}
 	
-	public static Point MapToDevicePoint(Point2D pntSource,MapView osmv){
-		TileSystem tileSystem = osmv.getTileProvider().getTileSource().getTileSystem();
-		Point mapCoords = tileSystem.LatLongToPixelXY(pntSource.y,pntSource.x,
-				MapViewConstants.MAXIMUM_ZOOMLEVEL,null);
-		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
-		mapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
+	public Point MapToDevicePoint(Point2D pntSource){
+
+		Point mapCoords = mTileSystem.LatLongToPixelXY(pntSource.y,pntSource.x,
+				mZoomlevel,null);
 		
-		final Projection pj = osmv.getProjection();
-		final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - pj.getZoomLevel();
+//		final int worldWidth_2 = mTileSystem.MapWidthPixelSize(mZoomlevel) / 2;
+//		final int worldHeigth_2 = mTileSystem.MapHeigthPixelSize(mZoomlevel) / 2;
+//		screenRect.offset(worldWidth_2, worldHeigth_2);
 		
-		return new Point(mapCoords.x >> zoomDiff, mapCoords.y >> zoomDiff);
+//		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+//		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+//		mapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
+//		
+//		
+//		final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - pj.getZoomLevel();
+		
+		return new Point(mapCoords.x - mScreenRect.left, mapCoords.y - mScreenRect.top);
+	}
+	
+//	public static Point MapToDevicePoint(Point2D pntSource,MapView osmv){
+//		TileSystem tileSystem = osmv.getTileProvider().getTileSource().getTileSystem();
+//		Point mapCoords = tileSystem.LatLongToPixelXY(pntSource.y,pntSource.x,
+//				MapViewConstants.MAXIMUM_ZOOMLEVEL,null);
+//		final int worldWidthSize_2 = tileSystem.MapWidthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+//		final int worldHeigthSize_2 = tileSystem.MapHeigthPixelSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+//		mapCoords.offset(-worldWidthSize_2, -worldHeigthSize_2);
+//		
+//		final Projection pj = osmv.getProjection();
+//		final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - pj.getZoomLevel();
+//		
+//		return new Point(mapCoords.x >> zoomDiff, mapCoords.y >> zoomDiff);
+//	}
+	
+	void invalidate(){
+		if (mInvalidationHandler != null) {
+			mInvalidationHandler.sendEmptyMessage(MapTile.MAPTILE_SUCCESS_ID);
+		}
+	}
+	
+	public boolean isStop(){
+		return mIsStop;
+	}
+	
+	public void setStop(boolean aIsStop){
+		mIsStop = aIsStop;
 	}
 }

@@ -23,7 +23,7 @@ public abstract class TileLooper {
 	public final void loop(final Canvas pCanvas, final int pZoomLevel, final int pTileSizePx, final Rect pViewPort, final TileSystem tileSystem) {
 		// Calculate the amount of tiles needed for each side around the center one.
 		tileSystem.PixelXYToTileXY(pViewPort.left, pViewPort.top, mUpperLeft);
-		//mUpperLeft.offset(-1, -1);
+		mUpperLeft.offset(-1, -1);
 		tileSystem.PixelXYToTileXY(pViewPort.right, pViewPort.bottom, mLowerRight);
 
 		final int mapTileWidthUpperBound = tileSystem.MapWidthTileSize(pZoomLevel);
