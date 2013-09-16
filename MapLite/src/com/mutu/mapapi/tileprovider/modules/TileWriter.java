@@ -129,21 +129,40 @@ public class TileWriter implements IFilesystemCache, OpenStreetMapTileProviderCo
 
 		// if create failed, wait a bit in case another thread created it
 		try {
-			Thread.sleep(500);
+			for(int i=0;i<10;i++){
+				Thread.sleep(50);
+				if (pFile.exists()) {
+					if (DEBUGMODE) {
+						logger.debug("Seems like another thread created " + pFile);
+					}
+					return true;
+				}
+			}
 		} catch (final InterruptedException ignore) {
 		}
-		// and then check again
-		if (pFile.exists()) {
-			if (DEBUGMODE) {
-				logger.debug("Seems like another thread created " + pFile);
-			}
-			return true;
-		} else {
-			if (DEBUGMODE) {
-				logger.debug("File still doesn't exist: " + pFile);
-			}
-			return false;
+		
+		if (DEBUGMODE) {
+			logger.debug("File still doesn't exist: " + pFile);
 		}
+		return false;
+		
+//		// if create failed, wait a bit in case another thread created it
+//		try {
+//			Thread.sleep(500);
+//		} catch (final InterruptedException ignore) {
+//		}
+//		// and then check again
+//		if (pFile.exists()) {
+//			if (DEBUGMODE) {
+//				logger.debug("Seems like another thread created " + pFile);
+//			}
+//			return true;
+//		} else {
+//			if (DEBUGMODE) {
+//				logger.debug("File still doesn't exist: " + pFile);
+//			}
+//			return false;
+//		}
 	}
 
 	private void calculateDirectorySize(final File pDirectory) {
