@@ -254,14 +254,14 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 			return null;
 		}
 
-		@Override
-		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
-			removeTileFromQueues(pState.getMapTile());
-			// don't return the tile because we'll wait for the fs provider to ask for it
-			// this prevent flickering when a load of delayed downloads complete for tiles
-			// that we might not even be interested in any more
-			pState.getCallback().mapTileRequestCompleted(pState, null);
-		}
+//		@Override
+//		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
+//			removeTileFromQueues(pState.getMapTile());
+//			// don't return the tile because we'll wait for the fs provider to ask for it
+//			// this prevent flickering when a load of delayed downloads complete for tiles
+//			// that we might not even be interested in any more
+//			pState.getCallback().mapTileRequestCompleted(pState, null);
+//		}
 
 	}
 	
@@ -334,9 +334,11 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 						final ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
 						
 						final Drawable result = tileSource.getDrawable(byteStream);
-						//return result;
-						result.setBounds(0, 0, tileSource.getTileSizePixels(), tileSource.getTileSizePixels());
-						result.draw(canvas);
+						
+						if(result != null){
+							result.setBounds(0, 0, tileSource.getTileSizePixels(), tileSource.getTileSizePixels());
+							result.draw(canvas);
+						}
 						
 						StreamUtils.closeStream(in);
 						StreamUtils.closeStream(out);
@@ -384,14 +386,14 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 			return null;
 		}
 
-		@Override
-		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
-			removeTileFromQueues(pState.getMapTile());
-			// don't return the tile because we'll wait for the fs provider to ask for it
-			// this prevent flickering when a load of delayed downloads complete for tiles
-			// that we might not even be interested in any more
-			pState.getCallback().mapTileRequestCompleted(pState, null);
-		}
+//		@Override
+//		protected void tileLoaded(final MapTileRequestState pState, final Drawable pDrawable) {
+//			removeTileFromQueues(pState.getMapTile());
+//			// don't return the tile because we'll wait for the fs provider to ask for it
+//			// this prevent flickering when a load of delayed downloads complete for tiles
+//			// that we might not even be interested in any more
+//			pState.getCallback().mapTileRequestCompleted(pState, null);
+//		}
 
 	}
 }
