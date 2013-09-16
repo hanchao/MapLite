@@ -23,7 +23,6 @@ public class TiandituTileSource extends OnlineTileSourceBase {
 	
 	@Override
 	public String getTileURLString(MapTile aTile) {
-	
-		return getBaseUrl() + "?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER="+ mLayerName +"&STYLE=default&TILEMATRIXSET=c&TILEMATRIX=" + (aTile.getZoomLevel()+1) + "&TILEROW=" + aTile.getY() + "&TILECOL=" + aTile.getX() + "&FORMAT=tiles";
+		return getBaseUrl() + "?T=" + mLayerName + "&x=" + aTile.getX() + "&y=" + aTile.getY() + "&l=" + (aTile.getZoomLevel()+1);
 	}
 }
