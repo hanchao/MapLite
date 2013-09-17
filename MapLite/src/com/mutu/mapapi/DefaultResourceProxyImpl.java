@@ -101,6 +101,8 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "AMap";
 		case baidu:
 			return "baidu";
+		case supermapcloud:
+			return "supermapcloud";
 		case tianditu_vec:
 			return "tianditu_vec";
 		case tianditu_cva:

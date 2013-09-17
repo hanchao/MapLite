@@ -160,6 +160,10 @@ public class TileSourceFactory {
 			"http://shangetu8.map.bdimg.com/it/",
 			"http://shangetu9.map.bdimg.com/it/");
 	
+	public static final OnlineTileSourceBase SUPERMAPCLOUD = new SuperMapCloudTileSource("supermapcloud",
+			ResourceProxy.string.supermapcloud, 0, 17, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			"http://t0.supermapcloud.com/FileService/image");
+	
 	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
 			ResourceProxy.string.tianditu_vec, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", "vec_c", 
 			"http://t0.tianditu.com/DataServer",
@@ -261,6 +265,7 @@ public class TileSourceFactory {
 		mTileSources.add(GOOGLE);
 		mTileSources.add(AMAP);
 		mTileSources.add(BAIDU);
+		mTileSources.add(SUPERMAPCLOUD);
 		mTileSources.add(TIANDITU_VEC);
 		mTileSources.add(TIANDITU_CVA);
 		mTileSources.add(TIANDITU_IMG);
@@ -273,7 +278,7 @@ public class TileSourceFactory {
 		mTileSources.add(TIANDITU_VECTOR);
 		mTileSources.add(TIANDITU_IMAGE);
 		mTileSources.add(YUNNAN_BASIC);
-		mTileSources.add(YUNNAN_IMAGE);
+		mTileSources.add(YUNNAN_IMAGE);		
 		mTileSources.add(TIANDITU_YUNNAN_VECTOR);
 		mTileSources.add(TIANDITU_YUNNAN_IMAGE);
 	}

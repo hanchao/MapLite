@@ -28,6 +28,9 @@ public interface ResourceProxy {
 		//baidu
 		baidu,
 		
+		//supermapcloud
+		supermapcloud,
+		
 		//tianditu
 		tianditu_vec,tianditu_cva,tianditu_img,tianditu_cia,tianditu_vector,tianditu_image,
 		
