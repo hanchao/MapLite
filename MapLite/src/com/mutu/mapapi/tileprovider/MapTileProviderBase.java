@@ -366,7 +366,7 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 							if (bitmap == null) {
 								bitmap = Bitmap.createBitmap(pTileSizePx, pTileSizePx, Bitmap.Config.ARGB_8888);
 								canvas = new Canvas(bitmap);
-								canvas.drawColor(Color.LTGRAY);
+								canvas.drawColor(Color.argb(255, 244, 244, 239));
 							}
 							mDestRect.set(
 									x * mTileSize_2, y * mTileSize_2,
