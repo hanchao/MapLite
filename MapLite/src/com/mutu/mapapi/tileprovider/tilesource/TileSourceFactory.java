@@ -161,7 +161,7 @@ public class TileSourceFactory {
 			"http://shangetu9.map.bdimg.com/it/");
 	
 	public static final OnlineTileSourceBase SUPERMAPCLOUD = new SuperMapCloudTileSource("supermapcloud",
-			ResourceProxy.string.supermapcloud, 0, 17, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			ResourceProxy.string.supermapcloud, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
 			"http://t0.supermapcloud.com/FileService/image");
 	
 	public static final OnlineTileSourceBase TIANDITU_VEC = new TiandituTileSource("tianditu_vec",
