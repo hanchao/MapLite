@@ -150,10 +150,17 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase AMAP = new AMapTileSource("AMap",
 			ResourceProxy.string.amap, 1, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
 			"http://webrd01.is.autonavi.com/appmaptile",
-			"http://webrd01.is.autonavi.com/appmaptile",
-			"http://webrd01.is.autonavi.com/appmaptile",
-			"http://webrd01.is.autonavi.com/appmaptile");
+			"http://webrd02.is.autonavi.com/appmaptile",
+			"http://webrd03.is.autonavi.com/appmaptile",
+			"http://webrd04.is.autonavi.com/appmaptile");
 		
+	public static final OnlineTileSourceBase SOSO = new SosoTileSource("soso",
+			ResourceProxy.string.soso, 1, 18, 256, TileSystemFactory.getTileSystem("Mercator"), ".png", 
+			"http://p0.map.soso.com/maptilesv2/",
+			"http://p1.map.soso.com/maptilesv2/",
+			"http://p2.map.soso.com/maptilesv2/",
+			"http://p3.map.soso.com/maptilesv2/");
+	
 	public static final OnlineTileSourceBase BAIDU = new BaiduTileSource("Baidu",
 			ResourceProxy.string.baidu, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
 			"http://shangetu0.map.bdimg.com/it/",
@@ -272,6 +279,7 @@ public class TileSourceFactory {
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
 		mTileSources.add(GOOGLE);
 		mTileSources.add(AMAP);
+		mTileSources.add(SOSO);
 		mTileSources.add(BAIDU);
 		mTileSources.add(SUPERMAPCLOUD);
 		mTileSources.add(TIANDITU_VEC);

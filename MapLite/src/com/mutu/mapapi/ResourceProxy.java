@@ -28,6 +28,9 @@ public interface ResourceProxy {
 		//AMAP
 		amap,
 		
+		//soso
+		soso,
+		
 		//baidu
 		baidu,
 		
