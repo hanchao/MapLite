@@ -24,8 +24,10 @@ import com.mutu.mapapi.multitouch.controller.MultiTouchController;
 import com.mutu.mapapi.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import com.mutu.mapapi.multitouch.controller.MultiTouchController.PointInfo;
 import com.mutu.mapapi.multitouch.controller.MultiTouchController.PositionAndScale;
+import com.mutu.mapapi.tileprovider.MapTileProviderArray;
 import com.mutu.mapapi.tileprovider.MapTileProviderBase;
 import com.mutu.mapapi.tileprovider.MapTileProviderBasic;
+import com.mutu.mapapi.tileprovider.modules.MapTileModuleProviderBase;
 import com.mutu.mapapi.tileprovider.tilesource.IStyledTileSource;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
 import com.mutu.mapapi.tileprovider.tilesource.TileSourceFactory;
@@ -45,6 +47,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -143,7 +147,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		if (tileProvider == null) {
 			final ITileSource tileSource = getTileSourceFromAttributes(attrs);
-			tileProvider = new MapTileProviderBasic(context, tileSource);
+			tileProvider = isInEditMode()
+					? new MapTileProviderArray(tileSource, null, new MapTileModuleProviderBase[0])
+			: new MapTileProviderBasic(context, tileSource);
 		}
 
 		mTileRequestCompleteHandler = tileRequestCompleteHandler == null ? new SimpleInvalidationHandler(
@@ -155,11 +161,16 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		this.mMapOverlay.setDrawLoadingEnabled(true);
 		mOverlayManager = new OverlayManager(mMapOverlay);
 
-		this.mZoomController = new ZoomButtonsController(this);
-		this.mZoomController.setOnZoomListener(new MapViewZoomListener());
+		if (isInEditMode()) {
+			mZoomController = null;
+			mGestureDetector = null;
+		} else {
+			mZoomController = new ZoomButtonsController(this);
+			mZoomController.setOnZoomListener(new MapViewZoomListener());
+			mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
+			mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
+		}
 
-		mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
-		mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
 	}
 
 	/**
@@ -1012,6 +1023,13 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 	@Override
 	protected void dispatchDraw(final Canvas c) {
+		if(isInEditMode()){
+			Paint paint = new Paint();
+			paint.setTextAlign(Align.CENTER);
+			c.drawText(this.getClass().getSimpleName(), getWidth() / 2, getHeight() / 2, paint);
+			super.dispatchDraw(c);
+			return;
+		}
 		final long startMs = System.currentTimeMillis();
 
 		mProjection = new Projection();
