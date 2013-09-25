@@ -91,6 +91,8 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "Compass";
 		case map_mode:
 			return "Map mode";
+		case mapbox:
+			return "mapbox";
 		case arcgis_world_street_map:
 			return "arcgis world street map";
 		case arcgis_world_magery:

@@ -127,6 +127,13 @@ public class TileSourceFactory {
 			ResourceProxy.string.roads_nl, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), ".png",
 			"http://overlay.openstreetmap.nl/roads/");
 
+	public static final OnlineTileSourceBase MAPBOX = new XYTileSource("mapbox",
+			ResourceProxy.string.mapbox, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), ".png", 
+			"http://a.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
+			"http://n.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
+			"http://c.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
+			"http://d.tiles.mapbox.com/v3/tmcw.map-7s15q36b/");
+
 	public static final OnlineTileSourceBase ARCGIS_WORLD_STREET_MAP = new ArcGISOnlineTileSource("arcgis_world_street_map",
 			ResourceProxy.string.arcgis_world_street_map, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/");
 	
@@ -260,6 +267,7 @@ public class TileSourceFactory {
 //		mTileSources.add(CLOUDMADESMALLTILES);
 		mTileSources.add(MAPQUESTOSM);
 		mTileSources.add(MAPQUESTAERIAL);
+		mTileSources.add(MAPBOX);
 		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
 		mTileSources.add(GOOGLE);
