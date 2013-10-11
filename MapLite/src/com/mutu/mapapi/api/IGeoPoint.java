@@ -12,4 +12,6 @@ import com.mutu.mapapi.util.GeoPoint;
 public interface IGeoPoint {
 	int getLatitudeE6();
 	int getLongitudeE6();
+    double getLatitude();
+    double getLongitude();
 }

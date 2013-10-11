@@ -134,6 +134,16 @@ public class GeoPoint implements IGeoPoint, MathConstants, GeoConstants, Parcela
 		return this.mLatitudeE6;
 	}
 
+	@Override
+	public double getLongitude() {
+		return this.mLongitudeE6 / 1E6;
+	}
+
+	@Override
+	public double getLatitude() {
+		return this.mLatitudeE6 / 1E6;
+	}
+	
 	public int getAltitude() {
 		return this.mAltitude;
 	}

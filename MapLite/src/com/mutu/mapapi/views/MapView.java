@@ -1362,9 +1362,17 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 				Math.abs(out.x - tileSystem.MapWidthPixelSize(getZoomLevel()) - getScrollX())) {
 				out.x -= tileSystem.MapWidthPixelSize(getZoomLevel());
 			}
+			if (Math.abs(out.x - getScrollX()) >
+				Math.abs(out.x + tileSystem.MapWidthPixelSize(getZoomLevel()) - getScrollX())) {
+				out.x += tileSystem.MapWidthPixelSize(getZoomLevel());
+			}
 			if (Math.abs(out.y - getScrollY()) >
 				Math.abs(out.y - tileSystem.MapHeigthPixelSize(getZoomLevel()) - getScrollY())) {
 				out.y -= tileSystem.MapHeigthPixelSize(getZoomLevel());
+			}
+			if (Math.abs(out.y - getScrollY()) >
+				Math.abs(out.y + tileSystem.MapWidthPixelSize(getZoomLevel()) - getScrollY())) {
+				out.y += tileSystem.MapWidthPixelSize(getZoomLevel());
 			}
 			return out;
 		}
