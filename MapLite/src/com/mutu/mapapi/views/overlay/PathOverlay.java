@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.ResourceProxy;
+import com.mutu.mapapi.api.IGeoPoint;
 import com.mutu.mapapi.util.GeoPoint;
 import com.mutu.mapapi.views.MapView;
 import com.mutu.mapapi.views.MapView.Projection;
@@ -60,13 +61,17 @@ public class PathOverlay extends Overlay {
 	// ===========================================================
 
 	public PathOverlay(final int color, final Context ctx) {
-		this(color, new DefaultResourceProxyImpl(ctx));
+		this(color, 2.0f, new DefaultResourceProxyImpl(ctx));
 	}
 
-	public PathOverlay(final int color, final ResourceProxy pResourceProxy) {
-		super(pResourceProxy);
+	public PathOverlay(final int color, final ResourceProxy resourceProxy) {
+		this(color, 2.0f, resourceProxy);
+	}
+
+	public PathOverlay(final int color, final float width, final ResourceProxy resourceProxy) {
+		super(resourceProxy);
 		this.mPaint.setColor(color);
-		this.mPaint.setStrokeWidth(2.0f);
+		this.mPaint.setStrokeWidth(width);
 		this.mPaint.setStyle(Paint.Style.STROKE);
 
 		this.clearPath();
@@ -153,7 +158,7 @@ public class PathOverlay extends Overlay {
 		this.mPointsPrecomputed = 0;
 	}
 
-	public void addPoint(final GeoPoint pt) {
+	public void addPoint(final IGeoPoint pt) {
 		this.addPoint(pt.getLatitudeE6(), pt.getLongitudeE6());
 	}
 
@@ -176,7 +181,8 @@ public class PathOverlay extends Overlay {
 			return;
 		}
 
-		if (this.mPoints.size() < 2) {
+		final int size = this.mPoints.size();
+		if (size < 2) {
 			// nothing to paint
 			return;
 		}
@@ -184,8 +190,6 @@ public class PathOverlay extends Overlay {
 		final Projection pj = mapView.getProjection();
 
 		// precompute new points to the intermediate projection.
-		final int size = this.mPoints.size();
-
 		while (this.mPointsPrecomputed < size) {
 			final Point pt = this.mPoints.get(this.mPointsPrecomputed);
 			pj.toMapPixelsProjected(pt.x, pt.y, pt);
@@ -194,7 +198,7 @@ public class PathOverlay extends Overlay {
 		}
 
 		Point screenPoint0 = null; // points on screen
-		Point screenPoint1 = null;
+		Point screenPoint1;
 		Point projectedPoint0; // points from the points list
 		Point projectedPoint1;
 

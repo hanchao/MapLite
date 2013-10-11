@@ -8,6 +8,7 @@ import com.mutu.mapapi.DefaultResourceProxyImpl;
 import com.mutu.mapapi.ResourceProxy;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.MapTileProviderBase;
+import com.mutu.mapapi.tileprovider.ReusableBitmapDrawable;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
 import com.mutu.mapapi.tileprovider.tilesource.TileSourceFactory;
 import com.mutu.mapapi.tilesystem.TileSystem;
@@ -178,14 +179,26 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 		@Override
 		public void handleTile(final Canvas pCanvas, final int pTileSizePx, final MapTile pTile, final int pX, final int pY) {
 			Drawable currentMapTile = mTileProvider.getMapTile(pTile);
-			if (mDrawLoadingEnabled && currentMapTile == null) {
+			boolean isReusable = currentMapTile instanceof ReusableBitmapDrawable;
+			if (currentMapTile == null) {
 				currentMapTile = getLoadingTile();
 			}
 
 			if (currentMapTile != null) {
-				mTileRect.set(pX * pTileSizePx, pY * pTileSizePx, pX * pTileSizePx + pTileSizePx, pY
-						* pTileSizePx + pTileSizePx);
-				onTileReadyToDraw(pCanvas, currentMapTile, mTileRect);
+				mTileRect.set(pX * pTileSizePx, pY * pTileSizePx, pX * pTileSizePx + pTileSizePx,
+						pY * pTileSizePx + pTileSizePx);
+				if (isReusable)
+					((ReusableBitmapDrawable) currentMapTile).beginUsingDrawable();
+				try {
+					if (isReusable && !((ReusableBitmapDrawable) currentMapTile).isBitmapValid()) {
+						currentMapTile = getLoadingTile();
+						isReusable = false;
+					}
+					onTileReadyToDraw(pCanvas, currentMapTile, mTileRect);
+				} finally {
+					if (isReusable)
+						((ReusableBitmapDrawable) currentMapTile).finishUsingDrawable();
+				}
 			}
 
 			if (DEBUGMODE) {

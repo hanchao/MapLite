@@ -3,14 +3,13 @@ package com.mutu.mapapi.api;
 import com.mutu.mapapi.views.MapController;
 
 /**
- * An interface that resembles the Google Maps API MapController class
- * and is implemented by the osmdroid {@link MapController} class.
- *
+ * An interface that resembles the Google Maps API MapController class and is implemented by the
+ * osmdroid {@link MapController} class.
+ * 
  * @author Neil Boyd
- *
+ * 
  */
 public interface IMapController {
-
 	void animateTo(IGeoPoint geoPoint);
 	void scrollBy(int x, int y);
 	void setCenter(IGeoPoint point);

@@ -34,6 +34,7 @@ public abstract class SafeDrawOverlay extends Overlay {
 		super(pResourceProxy);
 	}
 
+	@Override
 	protected void draw(final Canvas c, final MapView osmv, final boolean shadow) {
 
 		sSafeCanvas.setCanvas(c);

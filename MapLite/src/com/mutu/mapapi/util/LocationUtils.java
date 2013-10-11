@@ -15,7 +15,7 @@ public class LocationUtils implements UtilConstants {
 
 	/**
 	 * Get the most recent location from the GPS or Network provider.
-	 * @param pLocationManager
+	 *
 	 * @return return the most recent location, or null if there's no known location
 	 */
 	public static Location getLastKnownLocation(final LocationManager pLocationManager) {
@@ -44,4 +44,5 @@ public class LocationUtils implements UtilConstants {
 		}
 		return pLocationManager.getLastKnownLocation(pProvider);
 	}
+
 }

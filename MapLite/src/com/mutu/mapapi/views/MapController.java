@@ -22,7 +22,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
 
 /**
- *
+ * 
  * @author Nicolas Gramlich
  * @author Marc Kurtz
  */
@@ -37,32 +37,31 @@ public class MapController implements IMapController, MapViewConstants {
 	// ===========================================================
 
 	protected final MapView mMapView;
-	
+
 	// Zoom animations
 	private ValueAnimator mZoomInAnimation;
 	private ValueAnimator mZoomOutAnimation;
 	private ScaleAnimation mZoomInAnimationOld;
 	private ScaleAnimation mZoomOutAnimationOld;
-	
+
 	private Animator mCurrentAnimator;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
 	public MapController(MapView mapView) {
 		mMapView = mapView;
-		
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			mZoomInAnimation = ValueAnimator.ofFloat(1f, 2f);
 			mZoomInAnimation.addListener(new MyZoomAnimatorListener());
 			mZoomInAnimation.addUpdateListener(new MyZoomAnimatorUpdateListener());
-			
 			mZoomInAnimation.setDuration(ANIMATION_DURATION_SHORT);
-			
+
 			mZoomOutAnimation = ValueAnimator.ofFloat(1f, 0.5f);
 			mZoomOutAnimation.addListener(new MyZoomAnimatorListener());
 			mZoomOutAnimation.addUpdateListener(new MyZoomAnimatorUpdateListener());
-			
 			mZoomOutAnimation.setDuration(ANIMATION_DURATION_SHORT);
 		} else {
 			mZoomInAnimationOld = new ScaleAnimation(1, 2, 1, 2, Animation.RELATIVE_TO_SELF, 0.5f,
@@ -74,9 +73,7 @@ public class MapController implements IMapController, MapViewConstants {
 			mZoomInAnimationOld.setAnimationListener(new MyZoomAnimationListener());
 			mZoomOutAnimationOld.setAnimationListener(new MyZoomAnimationListener());
 		}
-
 	}
-	
 
 	public void zoomToSpan(final BoundingBoxE6 bb) {
 		zoomToSpan(bb.getLatitudeSpanE6(), bb.getLongitudeSpanE6());
@@ -103,8 +100,8 @@ public class MapController implements IMapController, MapViewConstants {
 		if (diffNeeded > 1) { // Zoom Out
 			this.mMapView.setZoomLevel(curZoomLevel - MyMath.getNextSquareNumberAbove(diffNeeded));
 		} else if (diffNeeded < 0.5) { // Can Zoom in
-			this.mMapView.setZoomLevel(curZoomLevel + MyMath.getNextSquareNumberAbove(1 / diffNeeded)
-					- 1);
+			this.mMapView.setZoomLevel(curZoomLevel
+					+ MyMath.getNextSquareNumberAbove(1 / diffNeeded) - 1);
 		}
 	}
 
@@ -131,7 +128,8 @@ public class MapController implements IMapController, MapViewConstants {
 		}
 	}
 
-	public void scrollBy(final int x, final int y) {
+	@Override
+	public void scrollBy(int x, int y) {
 		this.mMapView.scrollBy(x, y);
 	}
 
@@ -143,7 +141,7 @@ public class MapController implements IMapController, MapViewConstants {
 		Point p = mMapView.getProjection().toMapPixels(point, null);
 		this.mMapView.scrollTo(p.x, p.y);
 	}
-	
+
 	@Override
 	public void stopPanning() {
 		mMapView.mIsFlinging = false;
@@ -157,6 +155,7 @@ public class MapController implements IMapController, MapViewConstants {
 	 */
 	@Override
 	public void stopAnimation(final boolean jumpToTarget) {
+
 		if (!mMapView.getScroller().isFinished()) {
 			if (jumpToTarget) {
 				mMapView.mIsFlinging = false;
@@ -164,7 +163,7 @@ public class MapController implements IMapController, MapViewConstants {
 			} else
 				stopPanning();
 		}
-		
+
 		// We ignore the jumpToTarget for zoom levels since it doesn't make sense to stop
 		// the animation in the middle. Maybe we could have it cancel the zoom operation and jump
 		// back to original zoom level?
@@ -246,7 +245,7 @@ public class MapController implements IMapController, MapViewConstants {
 			return false;
 		}
 	}
-	
+
 	protected void onAnimationStart() {
 		mMapView.mIsAnimating.set(true);
 	}
@@ -271,31 +270,28 @@ public class MapController implements IMapController, MapViewConstants {
 		mMapView.mIsAnimating.set(false);
 	}
 
-
 	protected class MyZoomAnimatorListener extends AnimatorListenerAdapter {
-		
 		@Override
 		public void onAnimationStart(Animator animation) {
 			MapController.this.onAnimationStart();
 			super.onAnimationStart(animation);
 		}
-		
+
 		@Override
 		public void onAnimationEnd(Animator animation) {
 			MapController.this.onAnimationEnd();
 			super.onAnimationEnd(animation);
 		}
 	}
-	
-	protected class MyZoomAnimatorUpdateListener implements AnimatorUpdateListener {
 
+	protected class MyZoomAnimatorUpdateListener implements AnimatorUpdateListener {
 		@Override
 		public void onAnimationUpdate(ValueAnimator animation) {
 			mMapView.mMultiTouchScale = (Float) animation.getAnimatedValue();
 			mMapView.invalidate();
 		}
 	}
-	
+
 	protected class MyZoomAnimationListener implements AnimationListener {
 
 		@Override
@@ -311,6 +307,6 @@ public class MapController implements IMapController, MapViewConstants {
 		@Override
 		public void onAnimationRepeat(Animation animation) {
 			// Nothing to do here...
-			}
 		}
+	}
 }

@@ -96,6 +96,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	/** Handles map scrolling */
 	private final Scroller mScroller;
 	protected boolean mIsFlinging;
+
 	protected final AtomicInteger mTargetZoomLevel = new AtomicInteger();
 	protected final AtomicBoolean mIsAnimating = new AtomicBoolean(false);
 
@@ -149,11 +150,12 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			final ITileSource tileSource = getTileSourceFromAttributes(attrs);
 			tileProvider = isInEditMode()
 					? new MapTileProviderArray(tileSource, null, new MapTileModuleProviderBase[0])
-			: new MapTileProviderBasic(context, tileSource);
+					: new MapTileProviderBasic(context, tileSource);
 		}
 
-		mTileRequestCompleteHandler = tileRequestCompleteHandler == null ? new SimpleInvalidationHandler(
-				this) : tileRequestCompleteHandler;
+		mTileRequestCompleteHandler = tileRequestCompleteHandler == null
+				? new SimpleInvalidationHandler(this)
+				: tileRequestCompleteHandler;
 		mTileProvider = tileProvider;
 		mTileProvider.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
 
@@ -163,14 +165,13 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		if (isInEditMode()) {
 			mZoomController = null;
-			mGestureDetector = null;
 		} else {
 			mZoomController = new ZoomButtonsController(this);
 			mZoomController.setOnZoomListener(new MapViewZoomListener());
-			mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
-			mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
 		}
 
+		mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
+		mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
 	}
 
 	/**
@@ -311,6 +312,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		getController().animateTo(aCenter);
 	}
 
+	/**
+	 * @deprecated use {@link #setMapCenter(IGeoPoint)}
+	 */
 	void setMapCenter(final int aLatitudeE6, final int aLongitudeE6) {
 		setMapCenter(new GeoPoint(aLatitudeE6, aLongitudeE6));
 	}
@@ -335,7 +339,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		final int curZoomLevel = this.mZoomLevel;
 
 		if (newZoomLevel != curZoomLevel) {
-		    mScroller.forceFinished(true);
+			mScroller.forceFinished(true);
 			mIsFlinging = false;
 		}
 
@@ -399,35 +403,33 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		final BoundingBoxE6 currentBox = getBoundingBox();
 
 		// Calculated required zoom based on latitude span
-    	final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-    			currentBox.getLatitudeSpanE6() :
-    			currentBox.getLatitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
+		final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ?
+				currentBox.getLatitudeSpanE6() :
+				currentBox.getLatitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-    	final double requiredLatitudeZoom =
-    		getMaxZoomLevel() -
-    		Math.ceil(Math.log(boundingBox.getLatitudeSpanE6() / maxZoomLatitudeSpan) / Math.log(2));
+		final double requiredLatitudeZoom =
+			getMaxZoomLevel() -
+			Math.ceil(Math.log(boundingBox.getLatitudeSpanE6() / maxZoomLatitudeSpan) / Math.log(2));
 
 
 		// Calculated required zoom based on longitude span
-    	final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-    			currentBox.getLongitudeSpanE6() :
-    			currentBox.getLongitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
+		final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ?
+				currentBox.getLongitudeSpanE6() :
+				currentBox.getLongitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-    	final double requiredLongitudeZoom =
-    		getMaxZoomLevel() -
-    		Math.ceil(Math.log(boundingBox.getLongitudeSpanE6() / maxZoomLongitudeSpan) / Math.log(2));
+		final double requiredLongitudeZoom =
+			getMaxZoomLevel() -
+			Math.ceil(Math.log(boundingBox.getLongitudeSpanE6() / maxZoomLongitudeSpan) / Math.log(2));
 
 
-    	// Zoom to boundingBox center, at calculated maximum allowed zoom level
-    	getController().setZoom((int)(
-    			requiredLatitudeZoom < requiredLongitudeZoom ?
-    			requiredLatitudeZoom : requiredLongitudeZoom));
+		// Zoom to boundingBox center, at calculated maximum allowed zoom level
+		getController().setZoom((int)(
+				requiredLatitudeZoom < requiredLongitudeZoom ?
+				requiredLatitudeZoom : requiredLongitudeZoom));
 
-    	getController().setCenter(
-    			new GeoPoint(
-    					boundingBox.getCenter().getLatitudeE6(), 
-    					boundingBox.getCenter().getLongitudeE6()
-    					));
+		getController().setCenter(
+				new GeoPoint(boundingBox.getCenter().getLatitudeE6(), boundingBox.getCenter()
+						.getLongitudeE6()));
 	}
 
 	/**
@@ -1478,6 +1480,16 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		@Override
 		public float metersToEquatorPixels(final float meters) {
 			return meters / (float) tileSystem.GroundResolution(0, mZoomLevelProjection);
+		}
+
+		@Override
+		public IGeoPoint getNorthEast() {
+			return fromPixels(getWidth(), 0);
+		}
+
+		@Override
+		public IGeoPoint getSouthWest() {
+			return fromPixels(0, getHeight());
 		}
 
 		@Override

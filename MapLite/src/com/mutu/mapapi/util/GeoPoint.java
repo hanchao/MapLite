@@ -143,7 +143,7 @@ public class GeoPoint implements IGeoPoint, MathConstants, GeoConstants, Parcela
 	public double getLatitude() {
 		return this.mLatitudeE6 / 1E6;
 	}
-	
+
 	public int getAltitude() {
 		return this.mAltitude;
 	}
@@ -238,7 +238,7 @@ public class GeoPoint implements IGeoPoint, MathConstants, GeoConstants, Parcela
 	// ===========================================================
 
 	/**
-	 * @see Source@ http://www.geocities.com/DrChengalva/GPSDistance.html
+	 * @see <a href="http://www.geocities.com/DrChengalva/GPSDistance.html">GPSDistance.html</a>
 	 * @return distance in meters
 	 */
 	public int distanceTo(final IGeoPoint other) {
@@ -263,8 +263,7 @@ public class GeoPoint implements IGeoPoint, MathConstants, GeoConstants, Parcela
 	}
 
 	/**
-	 * @see Source@ http://groups.google.com/group/osmdroid/browse_thread/thread/d22c4efeb9188fe9/
-	 *      bc7f9b3111158dd
+	 * @see <a href="http://groups.google.com/group/osmdroid/browse_thread/thread/d22c4efeb9188fe9/bc7f9b3111158dd">discussion</a>
 	 * @return bearing in degrees
 	 */
 	public double bearingTo(final IGeoPoint other) {
@@ -284,8 +283,8 @@ public class GeoPoint implements IGeoPoint, MathConstants, GeoConstants, Parcela
 	/**
 	 * Calculate a point that is the specified distance and bearing away from this point.
 	 *
-	 * @see Source@ http://www.movable-type.co.uk/scripts/latlong.html
-	 * @see Source@ http://www.movable-type.co.uk/scripts/latlon.js
+	 * @see <a href="http://www.movable-type.co.uk/scripts/latlong.html">latlong.html</a>
+	 * @see <a href="http://www.movable-type.co.uk/scripts/latlon.js">latlon.js</a>
 	 */
 	public GeoPoint destinationPoint(final double aDistanceInMeters, final float aBearingInDegrees) {
 

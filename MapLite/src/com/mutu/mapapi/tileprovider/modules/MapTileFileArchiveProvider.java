@@ -213,7 +213,7 @@ public class MapTileFileArchiveProvider extends MapTileFileStorageProviderBase {
 					logger.debug("Tile doesn't exist: " + pTile);
 				}
 
-				inputStream = getInputStream(pTile,tileSource);
+				inputStream = getInputStream(pTile, tileSource);
 				if (inputStream != null) {
 					if (DEBUGMODE) {
 						logger.debug("Use tile from archive: " + pTile);

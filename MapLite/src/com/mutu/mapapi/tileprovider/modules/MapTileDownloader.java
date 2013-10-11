@@ -19,8 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mutu.mapapi.http.HttpClientFactory;
+import com.mutu.mapapi.tileprovider.BitmapPool;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tileprovider.MapTileRequestState;
+import com.mutu.mapapi.tileprovider.ReusableBitmapDrawable;
 import com.mutu.mapapi.tileprovider.tilesource.CompositeTileSource;
 import com.mutu.mapapi.tileprovider.tilesource.ITileSource;
 import com.mutu.mapapi.tileprovider.tilesource.OnlineTileSourceBase;
@@ -261,6 +263,9 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 			// this prevent flickering when a load of delayed downloads complete for tiles
 			// that we might not even be interested in any more
 			pState.getCallback().mapTileRequestCompleted(pState, null);
+			// We want to return the Bitmap to the BitmapPool if applicable
+			if (pDrawable instanceof ReusableBitmapDrawable)
+				BitmapPool.getInstance().returnDrawableToPool((ReusableBitmapDrawable) pDrawable);
 		}
 
 	}
@@ -393,6 +398,9 @@ public class MapTileDownloader extends MapTileModuleProviderBase {
 			// this prevent flickering when a load of delayed downloads complete for tiles
 			// that we might not even be interested in any more
 			pState.getCallback().mapTileRequestCompleted(pState, null);
+			// We want to return the Bitmap to the BitmapPool if applicable
+			if (pDrawable instanceof ReusableBitmapDrawable)
+				BitmapPool.getInstance().returnDrawableToPool((ReusableBitmapDrawable) pDrawable);
 		}
 
 	}
