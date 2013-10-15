@@ -173,7 +173,7 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 			final Drawable marker = (item.getMarker(0) == null) ? this.mDefaultMarker : item
 					.getMarker(0);
 
-			pj.toPixels(item.getPoint(), mItemPoint);
+			pj.toMapPixels(item.getPoint(), mItemPoint);
 
 			if (hitTest(item, marker, mTouchScreenPoint.x - mItemPoint.x, mTouchScreenPoint.y
 					- mItemPoint.y)) {

@@ -1494,7 +1494,11 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		@Override
 		public Point toPixels(final IGeoPoint in, final Point out) {
-			return toMapPixels(in, out);
+			Point pnt = toMapPixels(in, out);
+			final Rect screenRect = getIntrinsicScreenRect();
+			pnt.x = pnt.x - screenRect.left ;
+			pnt.y = pnt.y - screenRect.top ;
+			return pnt;
 		}
 
 		@Override
