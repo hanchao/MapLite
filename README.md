@@ -11,6 +11,7 @@ Major differences from osmdroid
 * Supports EPSG:4326 TileSystem
 * Supports Google, MapBox, SOSO, AMAP, ArcGIS Online, SuperMapCloud and Tianditu Tile Source
 * Added CompositeTileSource, Contains Multiple Tile Source 
+* Supports Mapsforge Binary Map File Format 
 
 Screenshots
 -------------

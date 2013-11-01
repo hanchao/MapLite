@@ -50,6 +50,13 @@ public class ArchiveFileFactory {
 			}
 		}
 
+		if (pFile.getName().endsWith(".map")) {
+			try {
+				return MapsforgeFileArchive.getMapsforgeFileArchive(pFile);
+			} catch (final IOException e) {
+				logger.error("Error opening Mapsforge Map file", e);
+			}
+		}
 		return null;
 	}
 
