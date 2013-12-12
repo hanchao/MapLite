@@ -20,7 +20,7 @@ public interface ResourceProxy {
 		mapbox,
 		
 		// arcgis
-		arcgis_world_street_map,arcgis_world_magery,
+		arcgis_world_street_map,arcgis_world_magery,arcgis_china_map,
 		
 		//google
 		google,

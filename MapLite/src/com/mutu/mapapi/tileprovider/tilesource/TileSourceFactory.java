@@ -140,6 +140,9 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase ARCGIS_WORLD_IMAGERY = new ArcGISOnlineTileSource("arcgis_world_magery",
 			ResourceProxy.string.arcgis_world_magery, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/");
 	
+	public static final OnlineTileSourceBase ARCGIS_CHINA_MAP = new ArcGISOnlineTileSource("arcgis_china_map",
+			ResourceProxy.string.arcgis_china_map, 0, 20, 256, TileSystemFactory.getTileSystem("Mercator"), "", "http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/");
+	
 	public static final OnlineTileSourceBase GOOGLE = new GoogleTileSource("Google",
 			ResourceProxy.string.google, 0, 22, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
 			"http://mt0.google.cn/vt/lyrs=m@167000000&hl=zh-CN&gl=cn&",
@@ -277,6 +280,7 @@ public class TileSourceFactory {
 		mTileSources.add(MAPBOX);
 		mTileSources.add(ARCGIS_WORLD_STREET_MAP);
 		mTileSources.add(ARCGIS_WORLD_IMAGERY);
+		mTileSources.add(ARCGIS_CHINA_MAP);
 		mTileSources.add(GOOGLE);
 		mTileSources.add(AMAP);
 		mTileSources.add(SOSO);

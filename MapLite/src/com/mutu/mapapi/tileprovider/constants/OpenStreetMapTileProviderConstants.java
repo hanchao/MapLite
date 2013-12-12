@@ -47,7 +47,7 @@ public interface OpenStreetMapTileProviderConstants {
 	 */
 	public static final int NUMBER_OF_TILE_DOWNLOAD_THREADS = 4;
 
-	public static final int NUMBER_OF_TILE_FILESYSTEM_THREADS = 8;
+	public static final int NUMBER_OF_TILE_FILESYSTEM_THREADS = 4;
 
 	public static final long ONE_SECOND = 1000;
 	public static final long ONE_MINUTE = ONE_SECOND * 60;

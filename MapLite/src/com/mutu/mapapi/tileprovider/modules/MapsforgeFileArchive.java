@@ -17,11 +17,6 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import android.graphics.Bitmap;
-//import android.graphics.Canvas;
-//import android.graphics.Bitmap.Config;
-//import android.graphics.Color;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 

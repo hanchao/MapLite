@@ -105,6 +105,8 @@ public class DefaultResourceProxyImpl implements ResourceProxy, MapViewConstants
 			return "arcgis world street map";
 		case arcgis_world_magery:
 			return "arcgis world magery";
+		case arcgis_china_map:
+			return "arcgis china map";
 		case google:
 			return "google";
 		case amap:
