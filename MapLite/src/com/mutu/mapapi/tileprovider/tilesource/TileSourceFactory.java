@@ -130,7 +130,7 @@ public class TileSourceFactory {
 	public static final OnlineTileSourceBase MAPBOX = new XYTileSource("mapbox",
 			ResourceProxy.string.mapbox, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), ".png", 
 			"http://a.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
-			"http://n.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
+			"http://b.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
 			"http://c.tiles.mapbox.com/v3/tmcw.map-7s15q36b/",
 			"http://d.tiles.mapbox.com/v3/tmcw.map-7s15q36b/");
 
