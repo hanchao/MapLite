@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        tilesource="tianditu_vector"
+        tilesource="tianditu_vector_w"
         />
     
     <com.mutu.mapapi.views.MapView
@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        tilesource="tianditu_image"
+        tilesource="tianditu_image_w"
         />
 
 </LinearLayout>

@@ -225,6 +225,50 @@ public class TileSourceFactory {
 			"http://t6.tianditu.com/DataServer",
 			"http://t7.tianditu.com/DataServer");
 	
+	public static final OnlineTileSourceBase TIANDITU_VEC_W = new TiandituTileSource("tianditu_vec_w",
+			ResourceProxy.string.tianditu_vec, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", "vec_w", 
+			"http://t0.tianditu.com/DataServer",
+			"http://t1.tianditu.com/DataServer",
+			"http://t2.tianditu.com/DataServer",
+			"http://t3.tianditu.com/DataServer",
+			"http://t4.tianditu.com/DataServer",
+			"http://t5.tianditu.com/DataServer",
+			"http://t6.tianditu.com/DataServer",
+			"http://t7.tianditu.com/DataServer");
+	
+	public static final OnlineTileSourceBase TIANDITU_CVA_W = new TiandituTileSource("tianditu_cva_w",
+			ResourceProxy.string.tianditu_cva, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", "cva_w",
+			"http://t0.tianditu.com/DataServer",
+			"http://t1.tianditu.com/DataServer",
+			"http://t2.tianditu.com/DataServer",
+			"http://t3.tianditu.com/DataServer",
+			"http://t4.tianditu.com/DataServer",
+			"http://t5.tianditu.com/DataServer",
+			"http://t6.tianditu.com/DataServer",
+			"http://t7.tianditu.com/DataServer");
+	
+	public static final OnlineTileSourceBase TIANDITU_IMG_W = new TiandituTileSource("tianditu_img_w",
+			ResourceProxy.string.tianditu_img, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", "img_w", 
+			"http://t0.tianditu.com/DataServer",
+			"http://t1.tianditu.com/DataServer",
+			"http://t2.tianditu.com/DataServer",
+			"http://t3.tianditu.com/DataServer",
+			"http://t4.tianditu.com/DataServer",
+			"http://t5.tianditu.com/DataServer",
+			"http://t6.tianditu.com/DataServer",
+			"http://t7.tianditu.com/DataServer");
+	
+	public static final OnlineTileSourceBase TIANDITU_CIA_W = new TiandituTileSource("tianditu_cia_w",
+			ResourceProxy.string.tianditu_cia, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", "cia_w", 
+			"http://t0.tianditu.com/DataServer",
+			"http://t1.tianditu.com/DataServer",
+			"http://t2.tianditu.com/DataServer",
+			"http://t3.tianditu.com/DataServer",
+			"http://t4.tianditu.com/DataServer",
+			"http://t5.tianditu.com/DataServer",
+			"http://t6.tianditu.com/DataServer",
+			"http://t7.tianditu.com/DataServer");
+	
 	public static final OnlineTileSourceBase YUNNAN_BASICMAP = new ArcGISOnlineTileSource("yunnan_basicmap",
 			ResourceProxy.string.yunnan_basicmap, 6, 16, 256, TileSystemFactory.getTileSystem("WGS"), "", "http://ditu.ynmap.org.cn/RemoteRest/services/basicmap/MapServer/tile/");
 	
@@ -247,6 +291,14 @@ public class TileSourceFactory {
 	public static final CompositeTileSource TIANDITU_IMAGE = new CompositeTileSource("tianditu_image",
 			ResourceProxy.string.tianditu_image, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
 			TIANDITU_IMG,TIANDITU_CIA );
+	
+	public static final CompositeTileSource TIANDITU_VECTOR_W = new CompositeTileSource("tianditu_vector_w",
+			ResourceProxy.string.tianditu_vector, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			TIANDITU_VEC_W,TIANDITU_CVA_W);
+	
+	public static final CompositeTileSource TIANDITU_IMAGE_W = new CompositeTileSource("tianditu_image_w",
+			ResourceProxy.string.tianditu_image, 0, 18, 256, TileSystemFactory.getTileSystem("Mercator"), "", 
+			TIANDITU_IMG_W,TIANDITU_CIA_W );
 	
 	public static final CompositeTileSource YUNNAN_BASIC = new CompositeTileSource("yunnan_basic",
 			ResourceProxy.string.yunnan_basic, 0, 17, 256, TileSystemFactory.getTileSystem("WGS"), "", 
@@ -290,6 +342,10 @@ public class TileSourceFactory {
 		mTileSources.add(TIANDITU_CVA);
 		mTileSources.add(TIANDITU_IMG);
 		mTileSources.add(TIANDITU_CIA);
+		mTileSources.add(TIANDITU_VEC_W);
+		mTileSources.add(TIANDITU_CVA_W);
+		mTileSources.add(TIANDITU_IMG_W);
+		mTileSources.add(TIANDITU_CIA_W);
 		mTileSources.add(YUNNAN_BASICMAP);
 		mTileSources.add(YUNNAN_BASICLABEL);
 		mTileSources.add(YUNNAN_YNYXMAP);
@@ -297,6 +353,8 @@ public class TileSourceFactory {
 		mTileSources.add(YUNNAN_IMAGELABEL);
 		mTileSources.add(TIANDITU_VECTOR);
 		mTileSources.add(TIANDITU_IMAGE);
+		mTileSources.add(TIANDITU_VECTOR_W);
+		mTileSources.add(TIANDITU_IMAGE_W);
 		mTileSources.add(YUNNAN_BASIC);
 		mTileSources.add(YUNNAN_IMAGE);		
 		mTileSources.add(TIANDITU_YUNNAN_VECTOR);

@@ -4,6 +4,7 @@ package com.mutu.mapapi.tileprovider.tilesource;
 import com.mutu.mapapi.ResourceProxy.string;
 import com.mutu.mapapi.tileprovider.MapTile;
 import com.mutu.mapapi.tilesystem.TileSystem;
+import com.mutu.mapapi.tilesystem.WGSTileSystem;
 
 
 public class TiandituTileSource extends OnlineTileSourceBase {
@@ -23,6 +24,10 @@ public class TiandituTileSource extends OnlineTileSourceBase {
 	
 	@Override
 	public String getTileURLString(MapTile aTile) {
-		return getBaseUrl() + "?T=" + mLayerName + "&x=" + aTile.getX() + "&y=" + aTile.getY() + "&l=" + (aTile.getZoomLevel()+1);
+		int zoom = aTile.getZoomLevel();
+		if(getTileSystem() instanceof WGSTileSystem){
+			zoom += 1;
+		}
+		return getBaseUrl() + "?T=" + mLayerName + "&x=" + aTile.getX() + "&y=" + aTile.getY() + "&l=" + zoom;
 	}
 }
